@@ -13,7 +13,7 @@ const Heatmap = () => {
     }, []);
 
     const drawHeatmap = () => {
-        const d3heatmap = new D3Heatmap('#heatmap-div', "Differential Expression Heatmap", "", 80, 25, 150, 180, 700, 700);
+        const d3heatmap = new D3Heatmap('#heatmap-div', "Gene Expression Heatmap", "", 80, 25, 150, 180, 700, 700);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA;
         axios
             .post(apiEndpoint, {gene_ids: genes, cell_names: cells})
