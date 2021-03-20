@@ -2161,8 +2161,10 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@wormbase/d3-heatmap@file:../../../d3-heatmap":
-  version "1.0.2"
+"@wormbase/d3-heatmap@^1.0.4":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@wormbase/d3-heatmap/-/d3-heatmap-1.0.3.tgz#c6906e9b167eee1d3ed005054243031b50c43aa1"
+  integrity sha512-DQF1lcvm1qVEWw1/smJKA6Oun2021NPCCbhOeSS4WQ0irvHGXzIOFd4fO4oCZbt53ljR2R4e5YfPGsERUHBj7g==
   dependencies:
     d3 "^4.13.0"
     d3-scale-chromatic "^2.0.0"
