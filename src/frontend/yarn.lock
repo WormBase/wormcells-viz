@@ -2162,9 +2162,9 @@
     "@xtuc/long" "4.2.2"
 
 "@wormbase/d3-heatmap@^1.0.4":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@wormbase/d3-heatmap/-/d3-heatmap-1.0.3.tgz#c6906e9b167eee1d3ed005054243031b50c43aa1"
-  integrity sha512-DQF1lcvm1qVEWw1/smJKA6Oun2021NPCCbhOeSS4WQ0irvHGXzIOFd4fO4oCZbt53ljR2R4e5YfPGsERUHBj7g==
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@wormbase/d3-heatmap/-/d3-heatmap-1.0.4.tgz#1549fefd870b3266dc681dacfb44bcdfbce4dc0a"
+  integrity sha512-haqxgmAH9R/d6z69vcj++m9IOQJkDx931sTywB6qQDYcx2RYVvgdxd8MfjK2ErflheXl5hHBcwKFegcoACPpEg==
   dependencies:
     d3 "^4.13.0"
     d3-scale-chromatic "^2.0.0"

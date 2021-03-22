@@ -2,30 +2,28 @@ import React from "react";
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route, Link
 } from "react-router-dom";
 import Heatmap from "./Heatmap";
 import RidgeLine from "./RidgeLine";
 import SwarmPlot from "./SwarmPlot";
+import {Nav} from "react-bootstrap";
 
 const MainPage = () => {
     return (
         <Router>
             <div>
-                <nav>
-                    <ul>
-                        <li>
-                            <Link to="/heatmap">Heat Map</Link>
-                        </li>
-                        <li>
-                            <Link to="/ridge_line">Ridge line graphs</Link>
-                        </li>
-                        <li>
-                            <Link to="/swarm">Swarm plots</Link>
-                        </li>
-                    </ul>
-                </nav>
+                <Nav>
+                    <Nav.Item>
+                        <Nav.Link as={Link} to="/heatmap">Heat Map</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={Link} to="/ridge_line">Ridge line</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={Link} to="/swarm">Swarm plot</Nav.Link>
+                    </Nav.Item>
+                </Nav>
                 <hr/>
                 <Switch>
                     <Route path="/heatmap">
@@ -36,6 +34,9 @@ const MainPage = () => {
                     </Route>
                     <Route path="/swarm">
                         <SwarmPlot />
+                    </Route>
+                    <Route path="/">
+                        <Heatmap />
                     </Route>
                 </Switch>
             </div>

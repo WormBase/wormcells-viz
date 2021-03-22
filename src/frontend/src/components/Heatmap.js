@@ -1,52 +1,71 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import D3Heatmap from "@wormbase/d3-heatmap";
 import axios from 'axios';
-import {Col, Row, Container, FormGroup, FormLabel, FormControl, Button} from "react-bootstrap";
+import {Col, Row, Container, FormGroup, FormLabel, FormControl, Button, Spinner} from "react-bootstrap";
 
 const Heatmap = () => {
 
     const [genes, setGenes] = useState([]);
     const [cells, setCells] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const heatMapRef = useRef(null);
+    const [heatMapSize, setHeatMapSize] = useState({top: 10, right: 25, bottom: 150, left: 100, width: 700,
+        height: 700})
 
     useEffect(() => {
         drawHeatmap();
-    }, []);
+    }, [heatMapSize])
 
-    const drawHeatmap = () => {
-        const d3heatmap = new D3Heatmap('#heatmap-div', "Gene Expression Heatmap", "", 80, 25, 150, 180, 700, 700);
+    useEffect(() => {
+        let width = heatMapRef.current ? heatMapRef.current.offsetWidth : 0
+        if (width !== heatMapSize.width) {
+            setHeatMapSize(heatMapSize => ({...heatMapSize, width: width}));
+        }
+        const resizeListener = () => {
+            let width = heatMapRef.current ? heatMapRef.current.offsetWidth : 0
+            setHeatMapSize(heatMapSize => ({...heatMapSize, width: width}));
+        };
+        window.addEventListener('resize', resizeListener);
+        return () => {
+            window.removeEventListener('resize', resizeListener);
+        }
+    }, [])
+
+    const drawHeatmap = async (top, right, bottom, left, width, height) => {
+        setIsLoading(true);
+        const d3heatmap = new D3Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
+            heatMapSize.left, heatMapSize.width, heatMapSize.height);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA;
-        axios
-            .post(apiEndpoint, {gene_ids: genes, cell_names: cells})
-            .then(res => {
-                let threeColsData = [];
-                Object.entries(res.data.response).forEach(([gene_id, values]) => {
-                    Object.entries(values).forEach(([cell_name, value]) => {
-                        threeColsData.push({group: gene_id, variable: cell_name, value: -Math.log10(value)});
-                    })
-                });
-                let valuesSorted = threeColsData.map(e => e.value).sort((a, b) => a - b);
-                let max = valuesSorted[valuesSorted.length - 1];
-                let min = valuesSorted[0];
-                threeColsData = threeColsData.map(e => {
-                    return {
-                        group: e.group,
-                        variable: e.variable,
-                        value: Math.round((e.value - min) / (max - min) * 100)
-                    }
-                })
-                d3heatmap.draw(threeColsData);
+        const res = await axios.post(apiEndpoint, {gene_ids: genes, cell_names: cells});
+        let threeColsData = [];
+        await Promise.all(Object.entries(res.data.response).map(async([gene_id, values]) => {
+            let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/concise_description')
+            Object.entries(values).forEach(([cell_name, value]) => {
+                threeColsData.push({group: cell_name, variable: gene_id, value: -Math.log10(value),
+                    tooltip_html: "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/'" + gene_id +
+                        " target='_blank'>" + gene_id + "</a><br/>Cell Name: " + cell_name + "<br/>Gene description: " +
+                        desc.data.concise_description.data.text + "<br/>" + "Value: " + value});
             })
-            .catch(err => {
-                console.log("error");
-            });
+        }));
+        threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)
+        setGenes([...new Set(threeColsData.map(e => e.variable).reverse())]);
+        setCells([...new Set(threeColsData.map(e => e.group))]);
+        d3heatmap.draw(threeColsData);
+        setIsLoading(false);
     }
 
     return (
         <div>
             <Container fluid>
                 <Row>
+                    <Col sm={7} center>
+                        <h2 className="text-center">Gene Expression Heatmap</h2>
+                    </Col>
+                </Row>
+                <Row>
                     <Col sm={7}>
-                        <div id="heatmap-div" />
+                        <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
+                        <div id="heatmap-div" ref={heatMapRef}/>
                     </Col>
                     <Col sm={5}>
                         <FormGroup controlId="exampleForm.ControlTextarea1">
