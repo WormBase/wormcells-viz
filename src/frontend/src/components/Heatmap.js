@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
-import D3Heatmap from "@wormbase/d3-heatmap";
+import D3Heatmap from "@wormbase/d3-charts/dist/heatmap";
 import axios from 'axios';
 import {Col, Row, Container, FormGroup, FormLabel, FormControl, Button, Spinner} from "react-bootstrap";
 
@@ -7,14 +7,21 @@ const Heatmap = () => {
 
     const [genes, setGenes] = useState([]);
     const [cells, setCells] = useState([]);
+    const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const heatMapRef = useRef(null);
-    const [heatMapSize, setHeatMapSize] = useState({top: 10, right: 25, bottom: 150, left: 100, width: 700,
-        height: 700})
+    const [heatMapSize, setHeatMapSize] = useState({top: 10, right: 25, bottom: 100, left: 100, width: 600,
+        height: 650})
 
     useEffect(() => {
-        drawHeatmap();
-    }, [heatMapSize])
+        fetchData();
+    }, [])
+
+    useEffect(() => {
+        if (data !== null) {
+            drawHeatmap();
+        }
+    }, [heatMapSize, data])
 
     useEffect(() => {
         let width = heatMapRef.current ? heatMapRef.current.offsetWidth : 0
@@ -29,13 +36,11 @@ const Heatmap = () => {
         return () => {
             window.removeEventListener('resize', resizeListener);
         }
-    }, [])
+    }, []);
 
-    const drawHeatmap = async (top, right, bottom, left, width, height) => {
+    const fetchData = async () => {
         setIsLoading(true);
-        const d3heatmap = new D3Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-            heatMapSize.left, heatMapSize.width, heatMapSize.height);
-        let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA;
+        let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_HEATMAP;
         const res = await axios.post(apiEndpoint, {gene_ids: genes, cell_names: cells});
         let threeColsData = [];
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, values]) => {
@@ -44,13 +49,21 @@ const Heatmap = () => {
                 threeColsData.push({group: cell_name, variable: gene_id, value: -Math.log10(value),
                     tooltip_html: "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/'" + gene_id +
                         " target='_blank'>" + gene_id + "</a><br/>Cell Name: " + cell_name + "<br/>Gene description: " +
-                        desc.data.concise_description.data.text + "<br/>" + "Value: " + value});
+                        desc.data.concise_description.data.text + "<br/>" + "Value: " + -Math.log10(value)});
             })
         }));
         threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)
         setGenes([...new Set(threeColsData.map(e => e.variable).reverse())]);
         setCells([...new Set(threeColsData.map(e => e.group))]);
-        d3heatmap.draw(threeColsData);
+        setData(threeColsData);
+        setIsLoading(false);
+    }
+
+    const drawHeatmap = async (top, right, bottom, left, width, height) => {
+        setIsLoading(true);
+        const d3heatmap = new D3Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
+            heatMapSize.left, heatMapSize.width, heatMapSize.height, 1, 20);
+        d3heatmap.draw(data);
         setIsLoading(false);
     }
 
@@ -85,7 +98,6 @@ const Heatmap = () => {
                 </Row>
             </Container>
         </div>
-
     );
 }
 

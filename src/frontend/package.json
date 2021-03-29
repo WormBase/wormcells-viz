@@ -6,7 +6,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@wormbase/d3-heatmap": "^1.0.4",
+    "@wormbase/d3-charts": "^1.0.0",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "react": "^17.0.1",
