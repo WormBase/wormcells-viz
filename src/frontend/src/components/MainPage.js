@@ -4,8 +4,8 @@ import {
   Switch,
   Route, Link
 } from "react-router-dom";
-import Heatmap from "./Heatmap";
-import RidgeLine from "./RidgeLine";
+import HeatmapContainer from "./HeatmapContainer";
+import RidgeLineContainer from "./RidgeLineContainer";
 import SwarmPlot from "./SwarmPlot";
 import {Nav} from "react-bootstrap";
 
@@ -27,16 +27,16 @@ const MainPage = () => {
                 <hr/>
                 <Switch>
                     <Route path="/heatmap">
-                        <Heatmap />
+                        <HeatmapContainer />
                     </Route>
                     <Route path="/ridge_line">
-                        <RidgeLine />
+                        <RidgeLineContainer />
                     </Route>
                     <Route path="/swarm">
                         <SwarmPlot />
                     </Route>
                     <Route path="/">
-                        <Heatmap />
+                        <HeatmapContainer />
                     </Route>
                 </Switch>
             </div>

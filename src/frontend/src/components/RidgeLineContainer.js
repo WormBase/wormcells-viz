@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Button, Col, Container, FormControl, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
 import axios from "axios";
-import D3RidgeLine from "@wormbase/d3-charts/dist/ridgeline";
+import { Ridgeline } from "@wormbase/d3-charts";
 
-const RidgeLine = () => {
+const RidgeLineContainer = () => {
 
     const [gene, setGene] = useState('');
     const [data, setData] = useState(null);
@@ -51,9 +51,9 @@ const RidgeLine = () => {
         setIsLoading(false);
     }
 
-    const drawRidgeLine = async (top, right, bottom, left, width, height) => {
+    const drawRidgeLine = async () => {
         setIsLoading(true);
-        const d3RidgeLine = new D3RidgeLine('#ridgeline-div', ridgeLineSize.top, ridgeLineSize.right, ridgeLineSize.bottom,
+        const d3RidgeLine = new Ridgeline('#ridgeline-div', ridgeLineSize.top, ridgeLineSize.right, ridgeLineSize.bottom,
             ridgeLineSize.left, ridgeLineSize.width, ridgeLineSize.height, [-0.1,10], [0, 300], 0.01,);
         d3RidgeLine.draw(data);
         setIsLoading(false);
@@ -85,4 +85,4 @@ const RidgeLine = () => {
     );
 }
 
-export default RidgeLine;
+export default RidgeLineContainer;

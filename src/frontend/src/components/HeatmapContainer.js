@@ -1,9 +1,9 @@
 import React, {useState, useEffect, useRef} from "react";
-import D3Heatmap from "@wormbase/d3-charts/dist/heatmap";
+import { Heatmap } from "@wormbase/d3-charts";
 import axios from 'axios';
 import {Col, Row, Container, FormGroup, FormLabel, FormControl, Button, Spinner} from "react-bootstrap";
 
-const Heatmap = () => {
+const HeatmapContainer = () => {
 
     const [genes, setGenes] = useState([]);
     const [cells, setCells] = useState([]);
@@ -61,7 +61,7 @@ const Heatmap = () => {
 
     const drawHeatmap = async (top, right, bottom, left, width, height) => {
         setIsLoading(true);
-        const d3heatmap = new D3Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
+        const d3heatmap = new Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
             heatMapSize.left, heatMapSize.width, heatMapSize.height, 1, 20);
         d3heatmap.draw(data);
         setIsLoading(false);
@@ -101,4 +101,4 @@ const Heatmap = () => {
     );
 }
 
-export default Heatmap;
+export default HeatmapContainer;
