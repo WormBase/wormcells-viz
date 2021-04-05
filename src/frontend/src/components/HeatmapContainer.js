@@ -46,7 +46,7 @@ const HeatmapContainer = () => {
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, values]) => {
             let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/concise_description')
             Object.entries(values).forEach(([cell_name, value]) => {
-                threeColsData.push({group: cell_name, variable: gene_id, value: -Math.log10(value),
+                threeColsData.push({group: gene_id, variable: cell_name, value: -Math.log10(value),
                     tooltip_html: "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/'" + gene_id +
                         " target='_blank'>" + gene_id + "</a><br/>Cell Name: " + cell_name + "<br/>Gene description: " +
                         desc.data.concise_description.data.text + "<br/>" + "Value: " + -Math.log10(value)});
@@ -93,7 +93,7 @@ const HeatmapContainer = () => {
                                          value={cells.join('\n')}
                                          onChange={(event) => setCells(event.target.value.split('\n'))}/>
                         </FormGroup>
-                        <Button onClick={() => drawHeatmap()}>Update</Button>
+                        <Button onClick={() => fetchData()}>Update</Button>
                     </Col>
                 </Row>
             </Container>
