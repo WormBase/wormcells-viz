@@ -57,7 +57,7 @@ const HeatmapContainer = () => {
             })
         }));
         threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)
-        setGenes([...new Set(threeColsData.map(e => e.variable).reverse())]);
+        setGenes([...new Set(threeColsData.map(e => e.variable))]);
         setCells([...new Set(threeColsData.map(e => e.group))]);
         setData(threeColsData);
         setIsLoading(false);

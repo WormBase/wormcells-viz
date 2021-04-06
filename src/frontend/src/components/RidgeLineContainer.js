@@ -48,6 +48,13 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         for (const [key, value] of Object.entries(res.data.response)) {
             data[key] = value.map(e => -Math.log10(e));
         }
+        data = Object.keys(data).sort().reduce(
+            (obj, key) => {
+                obj[key] = data[key];
+                return obj;
+            },
+            {}
+        );
         let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/concise_description')
         let geneName = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/name')
         setGeneName(geneName.data.name.data.label);
