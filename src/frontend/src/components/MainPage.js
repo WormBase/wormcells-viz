@@ -22,7 +22,7 @@ const MainPage = () => {
                         <Nav.Link as={Link} to="/heatmap">Heat Map</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link as={Link} to="/ridge_line/">Ridge line</Nav.Link>
+                        <Nav.Link as={Link} to="/ridge_line/default">Ridge line</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
                         <Nav.Link as={Link} to="/swarm">Swarm plot</Nav.Link>

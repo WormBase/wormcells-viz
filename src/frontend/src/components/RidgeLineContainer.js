@@ -5,7 +5,7 @@ import { Ridgeline } from "@wormbase/d3-charts";
 
 const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
 
-    const [gene, setGene] = useState(gene_param !== undefined ? gene_param : '');
+    const [gene, setGene] = useState(gene_param !== "default" ? gene_param : '');
     const [data, setData] = useState(null);
     const [geneName, setGeneName] = useState('');
     const [geneDescription, setGeneDescription] = useState('');
