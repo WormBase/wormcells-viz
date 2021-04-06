@@ -45,11 +45,14 @@ const HeatmapContainer = () => {
         let threeColsData = [];
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, values]) => {
             let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/concise_description')
+            let gene_name = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/name')
             Object.entries(values).forEach(([cell_name, value]) => {
-                threeColsData.push({group: gene_id, variable: cell_name, value: -Math.log10(value),
+                threeColsData.push({group: gene_name.data.name.data.label,
+                    variable: cell_name, value: -Math.log10(value),
                     tooltip_html: "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/'" + gene_id +
-                        " target='_blank'>" + gene_id + "</a><br/>Cell Name: " + cell_name + "<br/>Gene description: " +
-                        desc.data.concise_description.data.text + "<br/>" + "Value: " + -Math.log10(value)});
+                        " target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data.name.data.label +
+                        "<br/>Gene description: " + desc.data.concise_description.data.text + "<br/>Cell Name: " +
+                        cell_name + "<br/>" + "Expression Frequency: 10<sup>-" + -Math.log10(value) + "</sup>"});
             })
         }));
         threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)

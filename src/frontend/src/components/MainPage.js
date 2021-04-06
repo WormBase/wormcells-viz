@@ -8,12 +8,16 @@ import HeatmapContainer from "./HeatmapContainer";
 import RidgeLineContainer from "./RidgeLineContainer";
 import SwarmPlot from "./SwarmPlot";
 import {Nav} from "react-bootstrap";
+import Home from "./Home";
 
 const MainPage = () => {
     return (
         <Router>
             <div>
                 <Nav>
+                    <Nav.Item>
+                        <Nav.Link as={Link} to="/">Home</Nav.Link>
+                    </Nav.Item>
                     <Nav.Item>
                         <Nav.Link as={Link} to="/heatmap">Heat Map</Nav.Link>
                     </Nav.Item>
@@ -36,7 +40,7 @@ const MainPage = () => {
                         <SwarmPlot />
                     </Route>
                     <Route path="/">
-                        <HeatmapContainer />
+                        <Home />
                     </Route>
                 </Switch>
             </div>
