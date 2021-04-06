@@ -7,6 +7,8 @@ const RidgeLineContainer = () => {
 
     const [gene, setGene] = useState('');
     const [data, setData] = useState(null);
+    const [geneName, setGeneName] = useState('');
+    const [geneDescription, setGeneDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const ridgeLineRef = useRef(null);
     const [ridgeLineSize, setRidgeLineSize] = useState({top: 30, right: 25, bottom: 30, left: 300, width: 1200,
@@ -46,6 +48,10 @@ const RidgeLineContainer = () => {
         for (const [key, value] of Object.entries(res.data.response)) {
             data[key] = value.map(e => -Math.log10(e));
         }
+        let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/concise_description')
+        let geneName = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/name')
+        setGeneName(geneName.data.name.data.label);
+        setGeneDescription(desc.data.concise_description.data.text);
         setData(data);
         setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 20 * Object.keys(data).length}))
         setIsLoading(false);
@@ -74,10 +80,18 @@ const RidgeLineContainer = () => {
                     </Col>
                     <Col sm={5}>
                         <FormGroup controlId="formBasicEmail">
-                            <FormLabel>Gene ID</FormLabel>
+                            <FormLabel>Load Gene</FormLabel>
                             <FormControl type="input" placeholder="Gene ID" value={gene} onChange={(event) => setGene(event.target.value)}/>
                         </FormGroup>
                         <Button onClick={() => fetchData()}>Update</Button>
+                        <div>
+                            <br/><br/>
+                            <strong>Gene ID:</strong> <a href={'https://wormbase.org/species/c_elegans/gene/' + gene} target='_blank'>{gene}</a><br/>
+                            <strong>Gene Name:</strong> {geneName} <br/>
+                            <strong>Gene Description:</strong> {geneDescription}
+                            <br/><br/>
+                            *Values on the X axis are 10<sup>-x</sup>
+                        </div>
                     </Col>
                 </Row>
             </Container>
