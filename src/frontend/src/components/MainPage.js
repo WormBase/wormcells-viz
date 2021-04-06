@@ -22,7 +22,7 @@ const MainPage = () => {
                         <Nav.Link as={Link} to="/heatmap">Heat Map</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link as={Link} to="/ridge_line">Ridge line</Nav.Link>
+                        <Nav.Link as={Link} to="/ridge_line/">Ridge line</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
                         <Nav.Link as={Link} to="/swarm">Swarm plot</Nav.Link>
@@ -33,9 +33,7 @@ const MainPage = () => {
                     <Route path="/heatmap">
                         <HeatmapContainer />
                     </Route>
-                    <Route path="/ridge_line">
-                        <RidgeLineContainer />
-                    </Route>
+                    <Route path="/ridge_line/:gene_param" component={RidgeLineContainer} />
                     <Route path="/swarm">
                         <SwarmPlot />
                     </Route>
