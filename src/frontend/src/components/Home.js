@@ -4,7 +4,7 @@ const HeatmapContainer = () => {
         <div>
             <div className="text-center">
                 <br/>
-                <h4>Visualization tools for single-cell gene abundance data based on <a href="https://d3js.org/" target="_blank">D3</a></h4>.
+                <h4>Visualization tools for <i>C. elegans</i> single-cell gene abundance data based on <a href="https://d3js.org/" target="_blank">D3</a></h4>.
                 <br/>
                 <h5>Heatmaps & dot plots</h5>
                 <p>Visualize mean gene expression across select genes & cell types</p><br/>
