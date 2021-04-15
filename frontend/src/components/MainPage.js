@@ -9,6 +9,7 @@ import RidgeLineContainer from "./RidgeLineContainer";
 import SwarmPlot from "./SwarmPlot";
 import {Nav} from "react-bootstrap";
 import Home from "./Home";
+import DotplotContainer from "./DotplotContainer";
 
 const MainPage = () => {
     return (
@@ -22,6 +23,9 @@ const MainPage = () => {
                         <Nav.Link as={Link} to="/heatmap">Heat Map</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
+                        <Nav.Link as={Link} to="/dotplot">Dot Plot</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
                         <Nav.Link as={Link} to="/ridge_line/default">Ridge line</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
@@ -32,6 +36,9 @@ const MainPage = () => {
                 <Switch>
                     <Route path="/heatmap">
                         <HeatmapContainer />
+                    </Route>
+                    <Route path="/heatmap">
+                        <DotplotContainer />
                     </Route>
                     <Route path="/ridge_line/:gene_param" component={RidgeLineContainer} />
                     <Route path="/swarm">

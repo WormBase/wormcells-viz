@@ -2161,7 +2161,7 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@wormbase/d3-charts@file:../../../d3-charts":
+"@wormbase/d3-charts@file:../../d3-charts":
   version "1.0.1"
   dependencies:
     d3 "^4.13.0"
