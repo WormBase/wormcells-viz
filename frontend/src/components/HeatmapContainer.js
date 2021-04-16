@@ -96,7 +96,7 @@ const HeatmapContainer = () => {
             <Container fluid>
                 <Row>
                     <Col sm={7} center>
-                        <h2 className="text-center">Gene Expression Heatmap</h2>
+                        <h2 className="text-center">Gene Expression {dotplot ? "Dotplot": "Heatmap"} </h2>
                     </Col>
                 </Row>
                 <Row>
