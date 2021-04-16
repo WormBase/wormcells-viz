@@ -2161,8 +2161,10 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@wormbase/d3-charts@file:../../d3-charts":
-  version "1.0.1"
+"@wormbase/d3-charts@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@wormbase/d3-charts/-/d3-charts-1.0.2.tgz#179f3c45a05322af2cb7ca0b78442861d2157ac0"
+  integrity sha512-Kqv5Fl2qjAaMfkLSVh7RSZHgrQq0yDIXNBX4yOOOfnk3Dnbkhzo0a7iRsWubVxd+7dxx2J6r9tuL4IWsL9tAMg==
   dependencies:
     d3 "^4.13.0"
     d3-scale-chromatic "^2.0.0"
