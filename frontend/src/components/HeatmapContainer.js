@@ -53,7 +53,14 @@ const HeatmapContainer = () => {
     const fetchData = async () => {
         setIsLoading(true);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_HEATMAP;
-        const res = await axios.post(apiEndpoint, {gene_ids: genes.map(pair => pair.split(" (")[1].slice(0, -1)), cell_names: cells});
+        let gene_ids = genes.map(pair => {
+            if (pair.startsWith("WBGene")) {
+                return pair
+            } else {
+                return pair.split(" (")[1].slice(0, -1)
+            }
+        });
+        const res = await axios.post(apiEndpoint, {gene_ids: gene_ids, cell_names: cells});
         let threeColsData = [];
         let newGeneLabels = [];
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, values]) => {
@@ -106,9 +113,9 @@ const HeatmapContainer = () => {
                     </Col>
                     <Col sm={5}>
                         <div align="right">
-                            <ToggleButtonGroup type="radio" name="options" defaultValue={1}>
-                                <ToggleButton value={1} onClick={() => setDotplot(false)}>HeatMap</ToggleButton>
-                                <ToggleButton value={2} onClick={() => setDotplot(true)}>DotPlot</ToggleButton>
+                            <ToggleButtonGroup type="radio"  name="options" defaultValue={1}>
+                                <ToggleButton variant="outline-primary" value={1} onClick={() => setDotplot(false)}>HeatMap</ToggleButton>
+                                <ToggleButton variant="outline-primary" value={2} onClick={() => setDotplot(true)}>DotPlot</ToggleButton>
                             </ToggleButtonGroup>
                             {dotplot ?
                                 <div>
