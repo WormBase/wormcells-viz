@@ -54,10 +54,15 @@ const HeatmapContainer = () => {
         setIsLoading(true);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_HEATMAP;
         let gene_ids = genes.map(pair => {
-            if (pair.startsWith("WBGene")) {
-                return pair
-            } else {
-                return pair.split(" (")[1].slice(0, -1)
+            if (pair !== "" ) {
+                if (pair.startsWith("WBGene")) {
+                    return pair
+                } else {
+                    let pairArr = pair.split(" (");
+                    if (pairArr.length > 1) {
+                        return pair.split(" (")[1].slice(0, -1)
+                    }
+                }
             }
         });
         const res = await axios.post(apiEndpoint, {gene_ids: gene_ids, cell_names: cells});
@@ -89,7 +94,7 @@ const HeatmapContainer = () => {
         let d3Chart;
         if (dotplot) {
             d3Chart = new Dotplot('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1, 0.001, 200, coloredDots);
+                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1, 0.001, 30, coloredDots);
         } else {
             d3Chart = new Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
                 heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1);
