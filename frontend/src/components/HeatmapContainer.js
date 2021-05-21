@@ -75,8 +75,8 @@ const HeatmapContainer = () => {
             Object.entries(values).forEach(([cell_name, value]) => {
                 threeColsData.push({group: gene_name.data.name.data.label,
                     variable: cell_name, value: value,
-                    tooltip_html: "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/'" + gene_id +
-                        " target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data.name.data.label +
+                    tooltip_html: "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/" + gene_id +
+                        "' target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data.name.data.label +
                         "<br/>Gene description: " + desc.data.concise_description.data.text +
                         "<br/><a href='ridge_line/" + gene_id + "'>View ridgeline plot for gene</a><br/>Cell Name: " +
                         cell_name + "<br/>" + "Expression Frequency: 10<sup>-" + (-Math.log10(value)).toFixed(4) + "</sup>"});
