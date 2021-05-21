@@ -94,10 +94,10 @@ const HeatmapContainer = () => {
         let d3Chart;
         if (dotplot) {
             d3Chart = new Dotplot('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1, 0.001, 30, coloredDots);
+                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1, 0.001, 30, coloredDots, 20);
         } else {
             d3Chart = new Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1);
+                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1, 20);
         }
         d3Chart.draw(data);
         setIsLoading(false);

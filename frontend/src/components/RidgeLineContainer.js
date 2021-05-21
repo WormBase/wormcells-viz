@@ -11,7 +11,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
     const [geneDescription, setGeneDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const ridgeLineRef = useRef(null);
-    const [ridgeLineSize, setRidgeLineSize] = useState({top: 30, right: 25, bottom: 30, left: 300, width: 1200,
+    const [ridgeLineSize, setRidgeLineSize] = useState({top: 150, right: 25, bottom: 30, left: 120, width: 1200,
         height: 650});
 
     useEffect(() => {
@@ -46,28 +46,28 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         setGene(res.data.gene_id);
         let data = {}
         for (const [key, value] of Object.entries(res.data.response)) {
-            data[key] = value.map(e => -Math.log10(e));
+            let cellName = key.replaceAll('_', ' ').trim();
+            data[cellName] = value.map(e => -Math.log10(e));
         }
         data = Object.keys(data).sort().reduce(
             (obj, key) => {
                 obj[key] = data[key];
                 return obj;
-            },
-            {}
+            }, {}
         );
         let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/concise_description')
         let geneName = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/name')
         setGeneName(geneName.data.name.data.label);
         setGeneDescription(desc.data.concise_description.data.text);
         setData(data);
-        setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 20 * Object.keys(data).length}))
+        setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 100 * Object.keys(data).length}))
         setIsLoading(false);
     }
 
     const drawRidgeLine = async () => {
         setIsLoading(true);
         const d3RidgeLine = new Ridgeline('#ridgeline-div', ridgeLineSize.top, ridgeLineSize.right, ridgeLineSize.bottom,
-            ridgeLineSize.left, ridgeLineSize.width, ridgeLineSize.height, [-0.1,10], [0, 300], 0.01,);
+            ridgeLineSize.left, ridgeLineSize.width, ridgeLineSize.height, [-0.1,10], [0, 1000], 0.01, 20);
         d3RidgeLine.draw(data);
         setIsLoading(false);
     }
@@ -76,16 +76,16 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         <div>
             <Container fluid>
                 <Row>
-                    <Col sm={7} center>
+                    <Col sm={8} center>
                         <h2 className="text-center">Gene Expression Ridgeline Chart</h2>
                     </Col>
                 </Row>
                 <Row>
-                    <Col sm={7}>
+                    <Col sm={8}>
                         <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
                         <div id="ridgeline-div" ref={ridgeLineRef}/>
                     </Col>
-                    <Col sm={5}>
+                    <Col sm={4}>
                         <FormGroup controlId="formBasicEmail">
                             <FormLabel>Load Gene</FormLabel>
                             <FormControl type="input" placeholder="Gene ID" value={gene} onChange={(event) => setGene(event.target.value)}/>
