@@ -11,7 +11,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
     const [geneDescription, setGeneDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const ridgeLineRef = useRef(null);
-    const [ridgeLineSize, setRidgeLineSize] = useState({top: 150, right: 25, bottom: 30, left: 120, width: 1200,
+    const [ridgeLineSize, setRidgeLineSize] = useState({top: 50, right: 25, bottom: 30, left: 120, width: 1200,
         height: 650});
 
     useEffect(() => {
@@ -60,7 +60,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         setGeneName(geneName.data.name.data.label);
         setGeneDescription(desc.data.concise_description.data.text);
         setData(data);
-        setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 100 * Object.keys(data).length}))
+        setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 50 * Object.keys(data).length}))
         setIsLoading(false);
     }
 

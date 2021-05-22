@@ -6,13 +6,12 @@ import {
     Row,
     Container,
     FormGroup,
-    FormLabel,
-    FormControl,
     Button,
     Spinner,
-    ToggleButtonGroup, ToggleButton, FormCheck
+    ToggleButtonGroup, ToggleButton, FormCheck, Accordion, Card, FormLabel, FormControl
 } from "react-bootstrap";
 import _ from 'lodash';
+import MultiSelect from "../components/multiselect/MultiSelect";
 
 const HeatmapContainer = () => {
 
@@ -62,9 +61,9 @@ const HeatmapContainer = () => {
                 if (pair.startsWith("WBGene")) {
                     return pair
                 } else {
-                    let pairArr = pair.split(" (");
+                    let pairArr = pair.split(" ( ");
                     if (pairArr.length > 1) {
-                        return pair.split(" (")[1].slice(0, -1)
+                        return pair.split(" ( ")[1].slice(0, -2)
                     }
                 }
             }
@@ -89,7 +88,7 @@ const HeatmapContainer = () => {
         threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)
         setMaxExprFreq(Math.max(...threeColsData.map(d => d.value)));
         setMinExprFreq(Math.min(...threeColsData.map(d => d.value)));
-        setGenes(newGeneLabels.map(pair => pair[0] + " (" + pair[1] + ")").sort());
+        setGenes(newGeneLabels.map(pair => pair[0] + " ( " + pair[1] + " )").sort());
         setCells([...new Set(threeColsData.map(e => e.variable))]);
         setData(threeColsData);
         setIsLoading(false);
@@ -152,28 +151,77 @@ const HeatmapContainer = () => {
                                 <div>
                                     <br/>
                                     <FormGroup controlId="formBasicCheckbox">
-                                        <FormCheck type="checkbox" label="Normalize data" checked={relativeFreqs}
+                                        <FormCheck type="checkbox" label="Normalize values" checked={relativeFreqs}
                                                    onChange={() => setRelativeFreqs(!relativeFreqs)}/>
                                     </FormGroup>
                                 </div>
                                 : null}
                             {!dotplot && relativeFreqs ?
                                 <p>Values in current view min: 10<sup>-{(-Math.log10(minExprFreq)).toFixed(4)}</sup> max: 10<sup>-{(-Math.log10(maxExprFreq)).toFixed(4)}</sup></p>
-                            : null}
+                                : null}
                         </div>
-                        <FormGroup controlId="exampleForm.ControlTextarea1">
-                            <FormLabel>Genes</FormLabel>
-                            <FormControl as="textarea" rows={6}
-                                         value={genes.join('\n')}
-                                         onChange={(event) => setGenes(event.target.value.split('\n'))}/>
-                        </FormGroup>
-                        <FormGroup controlId="exampleForm.ControlTextarea1">
-                            <FormLabel>Cells</FormLabel>
-                            <FormControl as="textarea" rows={6}
-                                         value={cells.join('\n')}
-                                         onChange={(event) => setCells(event.target.value.split('\n'))}/>
-                        </FormGroup>
-                        <Button onClick={() => fetchData()}>Update</Button>
+                        <Accordion defaultActiveKey="0">
+                            <Card>
+                                <Card.Header>
+                                    <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                        Select Genes
+                                    </Accordion.Toggle>
+                                </Card.Header>
+                                <Accordion.Collapse eventKey="0">
+                                    <Card.Body>
+                                        <MultiSelect
+                                            linkWB={"https://wormbase.org/species/c_elegans/gene"}
+                                            itemsNameSingular={"gene"}
+                                            itemsNamePlural={"genes"}
+                                            items={genes}
+                                            addItemFunction={(gene) => setGenes([...genes, gene])}
+                                            remItemFunction={(gene) => setGenes(genes.filter(g => g !== gene))}
+                                            searchType={"gene"}
+                                            sampleQuery={"e.g. dbl-1"}
+                                            listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}
+                                        />
+                                    </Card.Body>
+                                </Accordion.Collapse>
+                            </Card>
+                            <Card>
+                                <Card.Header>
+                                    <Accordion.Toggle as={Button} variant="link" eventKey="1">
+                                        Select Cells
+                                    </Accordion.Toggle>
+                                </Card.Header>
+                                <Accordion.Collapse eventKey="1">
+                                    <Card.Body>
+                                        <FormGroup controlId="exampleForm.ControlTextarea1">
+                                            <FormLabel>Edit list directly</FormLabel>
+                                            <FormControl as="textarea" rows={6}
+                                                         value={cells.join('\n')}
+                                                         onChange={(event) => setCells(event.target.value.split('\n'))}/>
+                                        </FormGroup>
+                                        {/*<MultiSelect*/}
+                                        {/*    linkWB={"https://wormbase.org/species/c_elegans/gene"}*/}
+                                        {/*    itemsNameSingular={"cell"}*/}
+                                        {/*    itemsNamePlural={"cells"}*/}
+                                        {/*    items={cells}*/}
+                                        {/*    addItemFunction={(cell) => setCells([...cells, cell])}*/}
+                                        {/*    remItemFunction={(cell) => setCells(cells.filter(c => c !== cell))}*/}
+                                        {/*    searchType={"wbbt"}*/}
+                                        {/*    sampleQuery={"e.g. ANA"}*/}
+                                        {/*    listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}*/}
+                                        {/*/>*/}
+                                    </Card.Body>
+                                </Accordion.Collapse>
+                            </Card>
+                        </Accordion>
+                        <br/>
+                        {/*<FormGroup controlId="exampleForm.ControlTextarea1">*/}
+                        {/*    <FormLabel>Genes</FormLabel>*/}
+                        {/*    <FormControl as="textarea" rows={6}*/}
+                        {/*                 value={genes.join('\n')}*/}
+                        {/*                 onChange={(event) => setGenes(event.target.value.split('\n'))}/>*/}
+                        {/*</FormGroup>*/}
+                        <Button onClick={() => fetchData()}>Refresh</Button>
+                        <br/>
+                        <br/>
                     </Col>
                 </Row>
             </Container>

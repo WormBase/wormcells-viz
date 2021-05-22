@@ -1,9 +1,9 @@
 import React from "react";
 
-const SwarmPlot = () => {
+const SwarmPlotContainer = () => {
     return (
         <div></div>
     );
 }
 
-export default SwarmPlot;
+export default SwarmPlotContainer;

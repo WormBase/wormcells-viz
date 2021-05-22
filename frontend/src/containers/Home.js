@@ -1,4 +1,4 @@
-const HeatmapContainer = () => {
+const Home = () => {
 
     return (
         <div>
@@ -18,4 +18,4 @@ const HeatmapContainer = () => {
     );
 }
 
-export default HeatmapContainer;
+export default Home;

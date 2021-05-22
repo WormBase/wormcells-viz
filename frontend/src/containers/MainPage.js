@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import HeatmapContainer from "./HeatmapContainer";
 import RidgeLineContainer from "./RidgeLineContainer";
-import SwarmPlot from "./SwarmPlot";
+import SwarmPlotContainer from "./SwarmPlotContainer";
 import {Nav} from "react-bootstrap";
 import Home from "./Home";
 
@@ -35,7 +35,7 @@ const MainPage = () => {
                     </Route>
                     <Route path="/ridge_line/:gene_param" component={RidgeLineContainer} />
                     <Route path="/swarm">
-                        <SwarmPlot />
+                        <SwarmPlotContainer />
                     </Route>
                     <Route path="/">
                         <Home />
