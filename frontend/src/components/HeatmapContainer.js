@@ -87,8 +87,8 @@ const HeatmapContainer = () => {
             })
         }));
         threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)
-        setMaxExprFreq(Math.max(...data.map(d => d.value)));
-        setMinExprFreq(Math.min(...data.map(d => d.value)));
+        setMaxExprFreq(Math.max(...threeColsData.map(d => d.value)));
+        setMinExprFreq(Math.min(...threeColsData.map(d => d.value)));
         setGenes(newGeneLabels.map(pair => pair[0] + " (" + pair[1] + ")").sort());
         setCells([...new Set(threeColsData.map(e => e.variable))]);
         setData(threeColsData);
