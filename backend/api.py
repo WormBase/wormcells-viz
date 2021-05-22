@@ -59,7 +59,8 @@ class FileStorageEngine(object):
         for col_name, col_value in gene_vec.iteritems():
             if col_name != "gene_id":
                 cell_barcode, cell_type = col_name.split("%")
-                results[cell_type].append(col_value)
+                if col_value > 0:
+                    results[cell_type].append(col_value)
         return results, gene_id
 
 

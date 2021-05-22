@@ -67,7 +67,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
     const drawRidgeLine = async () => {
         setIsLoading(true);
         const d3RidgeLine = new Ridgeline('#ridgeline-div', ridgeLineSize.top, ridgeLineSize.right, ridgeLineSize.bottom,
-            ridgeLineSize.left, ridgeLineSize.width, ridgeLineSize.height, [-0.1,10], [0, 1000], 0.01, 20);
+            ridgeLineSize.left, ridgeLineSize.width, ridgeLineSize.height, [1e-10,1e1], [0, 200], 0.5, 20);
         d3RidgeLine.draw(data);
         setIsLoading(false);
     }
