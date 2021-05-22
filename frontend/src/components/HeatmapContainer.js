@@ -26,6 +26,8 @@ const HeatmapContainer = () => {
     const [heatMapSize, setHeatMapSize] = useState({top: 10, right: 25, bottom: 100, left: 100, width: 600,
         height: 650})
     const [relativeFreqs, setRelativeFreqs] = useState(true);
+    const [maxExprFreq, setMaxExprFreq] = useState(0);
+    const [minExprFreq, setMinExprFreq] = useState(0);
 
     useEffect(() => {
         fetchData();
@@ -85,6 +87,8 @@ const HeatmapContainer = () => {
             })
         }));
         threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)
+        setMaxExprFreq(Math.max(...data.map(d => d.value)));
+        setMinExprFreq(Math.min(...data.map(d => d.value)));
         setGenes(newGeneLabels.map(pair => pair[0] + " (" + pair[1] + ")").sort());
         setCells([...new Set(threeColsData.map(e => e.variable))]);
         setData(threeColsData);
@@ -104,8 +108,6 @@ const HeatmapContainer = () => {
             if (relativeFreqs) {
                 minValue = 0;
                 maxValue = 1;
-                let maxExprFreq = Math.max(...data.map(d => d.value));
-                let minExprFreq = Math.min(...data.map(d => d.value));
                 dataMod = _.cloneDeep(data);
                 dataMod.forEach((d, i) => {
                     dataMod[i].value = (d.value - minExprFreq) / (maxExprFreq - minExprFreq)
@@ -145,7 +147,7 @@ const HeatmapContainer = () => {
                                                    onChange={() => setColoredDots(!coloredDots)}/>
                                     </FormGroup>
                                 </div>
-                                : ""}
+                                : null}
                             {!dotplot ?
                                 <div>
                                     <br/>
@@ -154,7 +156,10 @@ const HeatmapContainer = () => {
                                                    onChange={() => setRelativeFreqs(!relativeFreqs)}/>
                                     </FormGroup>
                                 </div>
-                                : ""}
+                                : null}
+                            {!dotplot && relativeFreqs ?
+                                <p>Values in current view min: 10<sup>-{(-Math.log10(minExprFreq)).toFixed(4)}</sup> max: 10<sup>-{(-Math.log10(maxExprFreq)).toFixed(4)}</sup></p>
+                            : null}
                         </div>
                         <FormGroup controlId="exampleForm.ControlTextarea1">
                             <FormLabel>Genes</FormLabel>
