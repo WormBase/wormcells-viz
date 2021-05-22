@@ -12,6 +12,7 @@ import {
     Spinner,
     ToggleButtonGroup, ToggleButton, FormCheck
 } from "react-bootstrap";
+import _ from 'lodash';
 
 const HeatmapContainer = () => {
 
@@ -24,6 +25,7 @@ const HeatmapContainer = () => {
     const heatMapRef = useRef(null);
     const [heatMapSize, setHeatMapSize] = useState({top: 10, right: 25, bottom: 100, left: 100, width: 600,
         height: 650})
+    const [relativeFreqs, setRelativeFreqs] = useState(true);
 
     useEffect(() => {
         fetchData();
@@ -33,7 +35,7 @@ const HeatmapContainer = () => {
         if (data !== null) {
             drawHeatmap();
         }
-    }, [heatMapSize, data, dotplot, coloredDots])
+    }, [heatMapSize, data, dotplot, coloredDots, relativeFreqs])
 
     useEffect(() => {
         let width = heatMapRef.current ? heatMapRef.current.offsetWidth : 0
@@ -92,14 +94,27 @@ const HeatmapContainer = () => {
     const drawHeatmap = async () => {
         setIsLoading(true);
         let d3Chart;
+        let dataMod = data;
         if (dotplot) {
             d3Chart = new Dotplot('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
                 heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1, 0.001, 30, coloredDots, 20);
         } else {
+            let minValue = 0;
+            let maxValue = 0.1;
+            if (relativeFreqs) {
+                minValue = 0;
+                maxValue = 1;
+                let maxExprFreq = Math.max(...data.map(d => d.value));
+                let minExprFreq = Math.min(...data.map(d => d.value));
+                dataMod = _.cloneDeep(data);
+                dataMod.forEach((d, i) => {
+                    dataMod[i].value = (d.value - minExprFreq) / (maxExprFreq - minExprFreq)
+                });
+            }
             d3Chart = new Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1, 20);
+                heatMapSize.left, heatMapSize.width, heatMapSize.height, minValue, maxValue, 20);
         }
-        d3Chart.draw(data);
+        d3Chart.draw(dataMod);
         setIsLoading(false);
     }
 
@@ -128,6 +143,15 @@ const HeatmapContainer = () => {
                                     <FormGroup controlId="formBasicCheckbox">
                                         <FormCheck type="checkbox" label="Colored dots" checked={coloredDots}
                                                    onChange={() => setColoredDots(!coloredDots)}/>
+                                    </FormGroup>
+                                </div>
+                                : ""}
+                            {!dotplot ?
+                                <div>
+                                    <br/>
+                                    <FormGroup controlId="formBasicCheckbox">
+                                        <FormCheck type="checkbox" label="Normalize data" checked={relativeFreqs}
+                                                   onChange={() => setRelativeFreqs(!relativeFreqs)}/>
                                     </FormGroup>
                                 </div>
                                 : ""}
