@@ -61,9 +61,10 @@ const HeatmapContainer = () => {
                 if (pair.startsWith("WBGene")) {
                     return pair
                 } else {
-                    let pairArr = pair.split(" ( ");
+                    let pairArr = pair.split(' [');
+                    pairArr = pairArr[0].split(" ( ");
                     if (pairArr.length > 1) {
-                        return pair.split(" ( ")[1].slice(0, -2)
+                        return pairArr[1].slice(0, -2)
                     }
                 }
             }
@@ -78,7 +79,8 @@ const HeatmapContainer = () => {
             Object.entries(values).forEach(([cell_name, value]) => {
                 threeColsData.push({group: gene_name.data.name.data.label,
                     variable: cell_name, value: value,
-                    tooltip_html: "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/" + gene_id +
+                        tooltip_html: "<div id='currentTooltip'/><button class='btn-secondary small' style='float: right;' onclick='(function(){getElementById(\"currentTooltip\").parentElement.style.opacity = \"0\"; getElementById(\"currentTooltip\").parentElement.innerHTML = \"\";})();'>X</button>" +
+                        "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/" + gene_id +
                         "' target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data.name.data.label +
                         "<br/>Gene description: " + desc.data.concise_description.data.text +
                         "<br/><a href='ridge_line/" + gene_id + "'>View ridgeline plot for gene</a><br/>Cell Name: " +
@@ -124,13 +126,19 @@ const HeatmapContainer = () => {
             <Container fluid>
                 <Row>
                     <Col sm={7} center>
-                        <h2 className="text-center">Gene Expression {dotplot ? "Dotplot": "Heatmap"} </h2>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm={7}>
-                        <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
-                        <div id="heatmap-div" ref={heatMapRef}/>
+                        <Container fluid>
+                            <Row>
+                                <Col>
+                                    <h2 className="text-center">Gene Expression {dotplot ? "Dotplot": "Heatmap"} </h2>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
+                                    <div id="heatmap-div" ref={heatMapRef}/>
+                                </Col>
+                            </Row>
+                        </Container>
                     </Col>
                     <Col sm={5}>
                         <div align="right">
