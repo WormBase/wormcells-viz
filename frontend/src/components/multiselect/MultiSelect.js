@@ -5,7 +5,7 @@ import {
     Button,
     FormControl,
 } from "react-bootstrap";
-import {FiMinusCircle, FiPlusCircle, FiUpload} from 'react-icons/fi';
+import {FiMinusCircle, FiSearch, FiUpload} from 'react-icons/fi';
 import AutoComplete from "./AutoComplete";
 import BulkIDUpload from "./BulkIDUpload";
 
@@ -138,7 +138,7 @@ const MultiSelect = (props) => {
                                     <div>
                                         <br/><br/><br/><br/>
                                         <center><Button size="sm" variant="outline-primary" onClick={() => setAddFromWB(true)}>
-                                            <FiPlusCircle/>
+                                            <FiSearch/>
                                             &nbsp; Search WormBase
                                         </Button>
                                             <br/><br/>

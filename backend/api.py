@@ -92,7 +92,10 @@ class SingleGeneReader:
     def on_post(self, req, resp):
         if req.media:
             gene_id = req.media["gene_id"] if "gene_id" in req.media and req.media["gene_id"] else None
-            results, gene_id = self.storage.get_data_gene(gene_id=gene_id)
+            try:
+                results, gene_id = self.storage.get_data_gene(gene_id=gene_id)
+            except KeyError:
+                results, gene_id = {}, gene_id
             resp.body = f'{{"response": {json.dumps(results)}, "gene_id": "{gene_id}"}}'
             resp.status = falcon.HTTP_OK
         else:
