@@ -2225,7 +2225,7 @@
     "@xtuc/long" "4.2.2"
 
 "@wormbase/d3-charts@../../d3-charts":
-  version "1.0.5"
+  version "1.0.6"
   dependencies:
     d3 "^4.13.0"
     d3-scale-chromatic "^2.0.0"

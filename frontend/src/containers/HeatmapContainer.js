@@ -100,20 +100,24 @@ const HeatmapContainer = () => {
         setIsLoading(true);
         let d3Chart;
         let dataMod = data;
+        let minValue = 0;
+        let maxValue = 0.1;
+        if (relativeFreqs) {
+            minValue = 0;
+            maxValue = 1;
+            dataMod = _.cloneDeep(data);
+            dataMod.forEach((d, i) => {
+                dataMod[i].value = (d.value - minExprFreq) / (maxExprFreq - minExprFreq)
+            });
+        }
         if (dotplot) {
-            d3Chart = new Dotplot('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, 0.1, 0.001, 30, coloredDots, 20);
-        } else {
-            let minValue = 0;
-            let maxValue = 0.1;
+            let circleSizeMultiplier = 30;
             if (relativeFreqs) {
-                minValue = 0;
-                maxValue = 1;
-                dataMod = _.cloneDeep(data);
-                dataMod.forEach((d, i) => {
-                    dataMod[i].value = (d.value - minExprFreq) / (maxExprFreq - minExprFreq)
-                });
+                circleSizeMultiplier = 1;
             }
+            d3Chart = new Dotplot('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
+                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, maxValue, 0.001, circleSizeMultiplier, coloredDots, 20);
+        } else {
             d3Chart = new Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
                 heatMapSize.left, heatMapSize.width, heatMapSize.height, minValue, maxValue, 20);
         }
@@ -146,25 +150,18 @@ const HeatmapContainer = () => {
                                 <ToggleButton variant="outline-primary" value={1} onClick={() => setDotplot(false)}>HeatMap</ToggleButton>
                                 <ToggleButton variant="outline-primary" value={2} onClick={() => setDotplot(true)}>DotPlot</ToggleButton>
                             </ToggleButtonGroup>
+                            <div>
+                                <br/>
                             {dotplot ?
                                 <div>
-                                    <br/>
-                                    <FormGroup controlId="formBasicCheckbox">
                                         <FormCheck type="checkbox" label="Colored dots" checked={coloredDots}
                                                    onChange={() => setColoredDots(!coloredDots)}/>
-                                    </FormGroup>
                                 </div>
                                 : null}
-                            {!dotplot ?
-                                <div>
-                                    <br/>
-                                    <FormGroup controlId="formBasicCheckbox">
-                                        <FormCheck type="checkbox" label="Normalize values" checked={relativeFreqs}
-                                                   onChange={() => setRelativeFreqs(!relativeFreqs)}/>
-                                    </FormGroup>
-                                </div>
-                                : null}
-                            {!dotplot && relativeFreqs ?
+                                <FormCheck type="checkbox" label="Normalize values" checked={relativeFreqs}
+                                           onChange={() => setRelativeFreqs(!relativeFreqs)}/>
+                            </div>
+                            {relativeFreqs ?
                                 <p>Values in current view min: 10<sup>-{(-Math.log10(minExprFreq)).toFixed(4)}</sup> max: 10<sup>-{(-Math.log10(maxExprFreq)).toFixed(4)}</sup></p>
                                 : null}
                         </div>
