@@ -21,7 +21,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
 
     const allGenes = useQuery('allGenes', async () => {
         let res = await axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_GENES);
-        res.data.data = new Set(...res.data.data);
+        res.data = new Set(res.data);
         return res;
     });
 
