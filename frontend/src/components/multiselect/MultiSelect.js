@@ -139,7 +139,7 @@ const MultiSelect = (props) => {
                                         <br/><br/><br/><br/>
                                         <center><Button size="sm" variant="outline-primary" onClick={() => setAddFromWB(true)}>
                                             <FiSearch/>
-                                            &nbsp; Search WormBase
+                                            &nbsp; Search Genes
                                         </Button>
                                             <br/><br/>
                                             {!(props.hideListIDs !== undefined && props.hideListIDs === true) ?

@@ -1,14 +1,14 @@
 import React, {useState} from "react";
 import LoadingOverlay from 'react-loading-overlay';
 import PropTypes from "prop-types";
-import {useQueries} from "react-query";
+import {useQueries, useQuery} from "react-query";
 import axios from "axios";
 import {AiFillWarning} from "react-icons/all";
 import {Alert, Button, Form} from "react-bootstrap";
 import {FiPlusCircle} from "react-icons/fi";
 
 
-const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addItemFunction}) => {
+const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addItemFunction, allGenes}) => {
 
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
 
@@ -33,10 +33,12 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
         let toMatch = new Set(searchEntities);
         let unorderedResults = apiQueries.map(res => res.data.data).join('\n').split('\n');
         unorderedResults.forEach(res => {
-            if (toMatch.has(res.split(' ')[0])) {
-                resultsMergedFirst.push(res);
-            } else if (!exactMatchOnly) {
-                resultsMergedSecond.push(res);
+            if (res.split(' ( ').length > 1 && allGenes.has(res.split(' ( ')[1].split(' )')[0])) {
+                if (toMatch.has(res.split(' ')[0])) {
+                    resultsMergedFirst.push(res);
+                } else if (!exactMatchOnly) {
+                    resultsMergedSecond.push(res);
+                }
             }
         });
         let resultsMerged = [...resultsMergedFirst, ...resultsMergedSecond].join('\n');

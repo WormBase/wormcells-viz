@@ -63,6 +63,9 @@ class FileStorageEngine(object):
                     results[cell_type].append(col_value)
         return results, gene_id
 
+    def get_gene_list(self):
+        return list(self.full_marix.columns)
+
 
 class GeneCellMatrixReader:
 
@@ -102,6 +105,17 @@ class SingleGeneReader:
             resp.status = falcon.HTTP_BAD_REQUEST
 
 
+class GenesReader:
+
+    def __init__(self, storage_engine: FileStorageEngine):
+        self.storage = storage_engine
+        self.logger = logging.getLogger(__name__)
+
+    def on_get(self, req, resp):
+        resp.body = json.dumps(self.storage.get_gene_list())
+        resp.status = falcon.HTTP_OK
+
+
 def main():
     parser = argparse.ArgumentParser(description="Single cell backend")
     parser.add_argument("-f", "--full-matrix", metavar="full_matrix_file", dest="full_matrix_file", type=str)
@@ -123,6 +137,7 @@ def main():
     app.add_route('/get_data_matrix', gene_cell_matrix_reader)
     single_gene_reader = SingleGeneReader(file_storage)
     app.add_route('/get_data_gene', single_gene_reader)
+    app.add_route('/get_all_genes', GenesReader(file_storage))
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()

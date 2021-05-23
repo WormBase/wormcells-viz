@@ -1,8 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Col, Container, FormControl, FormGroup, FormLabel, Modal, Row, Spinner} from "react-bootstrap";
+import {Col, Container, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
 import axios from "axios";
 import { Ridgeline } from "@wormbase/d3-charts";
 import AsyncTypeahead from "react-bootstrap-typeahead/lib/components/AsyncTypeahead";
+import {useQuery} from "react-query";
 
 
 const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
@@ -17,6 +18,12 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
     const ridgeLineRef = useRef(null);
     const [ridgeLineSize, setRidgeLineSize] = useState({top: 50, right: 25, bottom: 30, left: 120, width: 1200,
         height: 650});
+
+    const allGenes = useQuery('allGenes', async () => {
+        let res = await axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_GENES);
+        res.data.data = new Set(...res.data.data);
+        return res;
+    });
 
     useEffect(() => {
         fetchData(gene);
@@ -91,28 +98,32 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                         <div id="ridgeline-div" ref={ridgeLineRef}/>
                     </Col>
                     <Col sm={4}>
-                        <FormGroup controlId="formBasicEmail">
-                            <FormLabel>Load Gene</FormLabel>
-                            <AsyncTypeahead
-                                onSearch={(query) => {
-                                    axios.get(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=gene&userValue=' + query)
-                                        .then(res => {
-                                            let options = res.data.split('\n').filter(item => item !== 'more ...' && item !== '')
-                                            setTypeheadOptions(options);
-                                        });
-                                }}
-                                onChange={(selected) => {
-                                    if (selected !== undefined && selected.length > 0) {
-                                        let gene_id_first = selected[0].split(' ( ')[1];
-                                        if (gene_id_first !== undefined) {
-                                            let gene_id = gene_id_first.split(' )')[0];
-                                            fetchData(gene_id);
+                        {allGenes.isLoading ?
+                            <Spinner animation="grow"/>
+                            :
+                            <FormGroup controlId="formBasicEmail">
+                                <FormLabel>Load Gene</FormLabel>
+                                <AsyncTypeahead
+                                    onSearch={(query) => {
+                                        axios.get(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=gene&userValue=' + query)
+                                            .then(res => {
+                                                let options = res.data.split('\n').filter(item => item !== 'more ...' && item !== '')
+                                                options = options.filter(item => allGenes.data.data.has(item.split(' ( ')[1].split(' )')[0]));
+                                                setTypeheadOptions(options);
+                                            });
+                                    }}
+                                    onChange={(selected) => {
+                                        if (selected !== undefined && selected.length > 0) {
+                                            let gene_id_first = selected[0].split(' ( ')[1];
+                                            if (gene_id_first !== undefined) {
+                                                let gene_id = gene_id_first.split(' )')[0];
+                                                fetchData(gene_id);
+                                            }
                                         }
-                                    }
-                                }}
-                                options={typeheadOptions}
-                            />
-                        </FormGroup>
+                                    }}
+                                    options={typeheadOptions}
+                                />
+                            </FormGroup>}
                         <div>
                             <br/>
                             <strong>Gene ID:</strong> <a href={'https://wormbase.org/species/c_elegans/gene/' + gene} target='_blank'>{geneID}</a><br/>
