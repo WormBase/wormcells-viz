@@ -145,7 +145,7 @@ const MultiSelect = (props) => {
                                             {!(props.hideListIDs !== undefined && props.hideListIDs === true) ?
                                                 <Button variant="outline-primary" size="sm" onClick={() => setUploadIDs(true)}>
                                                     <FiUpload/>
-                                                    &nbsp; Upload list of WB IDs
+                                                    &nbsp; Paste list of Gene IDs
                                                 </Button>
                                                 : ""}
                                         </center>
