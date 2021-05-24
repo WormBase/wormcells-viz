@@ -98,9 +98,11 @@ const HeatmapContainer = () => {
         setMaxExprFreq(Math.max(...threeColsData.map(d => d.value)));
         setMinExprFreq(Math.min(...threeColsData.map(d => d.value)));
         setGenes(newGeneLabels.map(pair => pair[0] + " ( " + pair[1] + " )").sort());
-        setCells(new Set(threeColsData.map(e => e.variable)));
+        let newCells = new Set(threeColsData.map(e => e.variable));
+        setCells(newCells);
         setData(threeColsData);
         setIsLoading(false);
+        setHeatMapSize(heatMapSize => ({...heatMapSize, height: newCells.size * 32}));
     }
 
     const drawHeatmap = async () => {
