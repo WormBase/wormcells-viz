@@ -162,7 +162,7 @@ const MultiSelect = (props) => {
                                     : ""}
                                 {showAddFromWB ?
                                     <AutoComplete close={() => setAddFromWB(false)}
-                                                  addItemFunction={props.addItemFunction}
+                                                  addMultipleItemsFunction={props.addMultipleItemsFunction}
                                                   searchType={props.searchType} />
                                     : ""}
                                 {showUploadIDs ?
@@ -189,7 +189,7 @@ const MultiSelect = (props) => {
 
 MultiSelect.propTypes = {
     items: PropTypes.array,
-    addItemFunction: PropTypes.func,
+    addMultipleItemsFunction: PropTypes.func,
     remItemFunction: PropTypes.func,
     remAllItems: PropTypes.func,
     itemsNameSingular: PropTypes.string,

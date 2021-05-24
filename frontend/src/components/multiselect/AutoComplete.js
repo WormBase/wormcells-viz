@@ -6,7 +6,7 @@ import {useQuery} from "react-query";
 import axios from "axios";
 
 
-const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular}) => {
+const AutoComplete = ({close, addMultipleItemsFunction, searchType, itemsNameSingular}) => {
     const [exactMatchOnly, setExactMatchOnly] = useState(false);
     const [searchString, setSearchString] = useState('');
 
@@ -47,7 +47,7 @@ const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular}) =
                     <Row>
                         <Col>
                             <EntitiesFetchAndSelect searchString={searchString} exactMatchOnly={exactMatchOnly}
-                                                    addItemFunction={addItemFunction} searchType={searchType}
+                                                    addMultipleItemsFunction={addMultipleItemsFunction} searchType={searchType}
                                                     allGenes={allGenes.data.data} />
                         </Col>
                     </Row>
@@ -58,7 +58,7 @@ const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular}) =
 
 AutoComplete.propTypes = {
     close: PropTypes.func,
-    addItemFunction: PropTypes.func,
+    addMultipleItemsFunction: PropTypes.func,
     searchType: PropTypes.string,
     itemsNameSingular: PropTypes.string
 }

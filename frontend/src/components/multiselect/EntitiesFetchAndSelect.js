@@ -8,7 +8,7 @@ import {Alert, Button, Form} from "react-bootstrap";
 import {FiPlusCircle} from "react-icons/fi";
 
 
-const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addItemFunction, allGenes}) => {
+const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addMultipleItemsFunction, allGenes}) => {
 
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
 
@@ -63,9 +63,7 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
 
     const addMultipleItems = () => {
         if (tmpSelectedItems.size > 0) {
-            [...tmpSelectedItems].forEach((item) => {
-               addItemFunction(item);
-            });
+            addMultipleItemsFunction(tmpSelectedItems);
         }
     }
 
@@ -84,7 +82,7 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
                             Wormbase Helpdesk</a>.
                         </Alert> : null}
                         <Form.Control as="select" multiple
-                                      style={{height: '123px'}}
+                                      style={{height: '275px'}}
                                       defaultValue=""
                                       onChange={(e) => setTmpSelectedItems(new Set([...e.target].filter(option => option.selected).map(option => option.value)))}
                                       onDoubleClick={addMultipleItems}>
@@ -126,7 +124,7 @@ EntitiesFetchAndSelect.propTypes = {
     searchString: PropTypes.string,
     exactMatchOnly: PropTypes.bool,
     searchType: PropTypes.string,
-    addItemFunction: PropTypes.func
+    addMultipleItemsFunction: PropTypes.func
 }
 
 
