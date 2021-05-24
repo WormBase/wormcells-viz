@@ -90,7 +90,7 @@ const MultiSelect = (props) => {
                                 <FormControl as="select" multiple
                                              onChange={handleChangeIdentifiedListSelection}
                                              defaultValue=""
-                                             style={{height: '200px'}}>
+                                             style={{height: '350px'}}>
                                     {[...selectedItemsToDisplay].sort().map(item =>
                                         <option>{item}</option>
                                     )}
@@ -103,16 +103,25 @@ const MultiSelect = (props) => {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-sm-6">
+                            <div className="col-sm-auto">
                                 <Button
                                     variant="outline-primary"
                                     size="sm"
                                     onClick={handleRemSelectedFromList}>
                                     <FiMinusCircle />
-                                    &nbsp; Remove
+                                    &nbsp; Remove selected
                                 </Button>
                             </div>
-                            <div className="col-sm-6">
+                            <div className="col-sm-auto">
+                                <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    onClick={() => props.remAllItems()}>
+                                    <FiMinusCircle />
+                                    &nbsp; Clear
+                                </Button>
+                            </div>
+                            <div className="col-sm-auto">
                                 {props.linkWB && selectedItems.length > 0 ?
                                     <Button size="sm" variant="outline-secondary" onClick={() => {
                                         selectedItems.forEach((item) => {
@@ -182,6 +191,7 @@ MultiSelect.propTypes = {
     items: PropTypes.array,
     addItemFunction: PropTypes.func,
     remItemFunction: PropTypes.func,
+    remAllItems: PropTypes.func,
     itemsNameSingular: PropTypes.string,
     itemsNamePlural: PropTypes.string,
     linkWB: PropTypes.string,

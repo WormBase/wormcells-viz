@@ -198,6 +198,7 @@ const HeatmapContainer = () => {
                                                 itemsNamePlural={"genes"}
                                                 items={genes}
                                                 addItemFunction={(gene) => setGenes([...genes, gene])}
+                                                remAllItems={() => setGenes([])}
                                                 remItemFunction={(gene) => setGenes(genes.filter(g => g !== gene))}
                                                 searchType={"gene"}
                                                 sampleQuery={"e.g. dbl-1"}
