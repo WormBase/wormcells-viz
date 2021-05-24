@@ -15,7 +15,7 @@ const BulkIDUpload = ({addItemFunction, close, listIDsAPI, searchType, itemsName
             <FormGroup controlId="formControlsTextarea">
                 <Form.Label>Insert a list of WB {itemsNamePlural} IDs</Form.Label> &nbsp; <Button size="sm" variant="outline-primary" className="pull-right" onClick={close}>Close</Button>
                 <br/><br/>
-                <FormControl as="textarea" rows={8} placeholder="each ID must start with 'WB'"
+                <FormControl as="textarea" rows={14} placeholder="each ID must start with 'WB'"
                              onChange={(e) => {
                                  setUploadedIDs(e.target.value);
                              }}/>

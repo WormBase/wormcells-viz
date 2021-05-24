@@ -31,7 +31,7 @@ const MultiSelect = (props) => {
             let selOpts = [];
             let options = itemsIdForm;
             [...options].forEach(function(option){if (option.selected){ selOpts.push(option.value) }});
-            if (selOpts.length !== tmpDeselectedItems.length) {
+            if (selOpts.length !== [...tmpDeselectedItems].length) {
                 [...options].forEach(function(option){ option.selected = false; });
             }
         }
@@ -89,6 +89,11 @@ const MultiSelect = (props) => {
                             <div className="col-sm-12">
                                 <FormControl as="select" multiple
                                              onChange={handleChangeIdentifiedListSelection}
+                                             onKeyPress={(target) => {
+                                                 if (target.charCode === 127) {
+                                                     handleRemSelectedFromList();
+                                                 }
+                                             }}
                                              defaultValue=""
                                              style={{height: '350px'}}>
                                     {[...selectedItemsToDisplay].sort().map(item =>
@@ -118,23 +123,23 @@ const MultiSelect = (props) => {
                                     size="sm"
                                     onClick={() => props.remAllItems()}>
                                     <FiMinusCircle />
-                                    &nbsp; Clear
+                                    &nbsp; Remove all
                                 </Button>
                             </div>
-                            <div className="col-sm-auto">
-                                {props.linkWB && selectedItems.length > 0 ?
-                                    <Button size="sm" variant="outline-secondary" onClick={() => {
-                                        selectedItems.forEach((item) => {
-                                            let itemNameIdArr = item.split(' ( ');
-                                            if (itemNameIdArr.length > 1) {
-                                                window.open(props.linkWB + "/" + itemNameIdArr[1].slice(0, -2));
-                                            }
-                                        });
-                                    }}>
-                                        Show on WB
-                                    </Button>
-                                    : ""}
-                            </div>
+                            {props.linkWB && selectedItems.length > 0 ?
+                                <>
+                                <br/>
+                                    <br/>
+                                <Button size="sm" variant="link" onClick={() => {
+                                            selectedItems.forEach((item) => {
+                                                let itemNameIdArr = item.split(' ( ');
+                                                if (itemNameIdArr.length > 1) {
+                                                    window.open(props.linkWB + "/" + itemNameIdArr[1].slice(0, -2));
+                                                }
+                                            });
+                                        }}>
+                                            Show selected genes on WB
+                                </Button></> : null}
                         </div>
                     </div>
                 </div>
