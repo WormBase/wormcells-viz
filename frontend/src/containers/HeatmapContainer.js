@@ -77,14 +77,18 @@ const HeatmapContainer = () => {
             let gene_name = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/name')
             newGeneLabels.push([gene_name.data.name.data.label, gene_id]);
             Object.entries(values).forEach(([cell_name, value]) => {
-                threeColsData.push({group: gene_name.data.name.data.label,
+                threeColsData.push({
+                    group: gene_name.data.name.data.label,
                     variable: cell_name, value: value,
-                        tooltip_html: "<div id='currentTooltip'/><button class='btn-secondary small' style='float: right;' onclick='(function(){getElementById(\"currentTooltip\").parentElement.style.opacity = \"0\"; getElementById(\"currentTooltip\").parentElement.innerHTML = \"\";})();'>X</button>" +
+                    tooltip_html: "<div id='currentTooltip'/><button class='btn-secondary small' style='float: right;' " +
+                        "onclick='(function(){getElementById(\"currentTooltip\").parentElement.style.opacity = \"0\"; " +
+                        "getElementById(\"currentTooltip\").parentElement.innerHTML = \"\";})();'>X</button>" +
                         "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/" + gene_id +
                         "' target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data.name.data.label +
                         "<br/>Gene description: " + desc.data.concise_description.data.text +
                         "<br/><a href='ridge_line/" + gene_id + "'>View ridgeline plot for gene</a><br/>Cell Name: " +
-                        cell_name + "<br/>" + "Expression Frequency: 10<sup>-" + (-Math.log10(value)).toFixed(4) + "</sup>"});
+                        cell_name + "<br/>" + "Expression Frequency: 10<sup>-" + (-Math.log10(value)).toFixed(1) + "</sup>"
+                });
             })
         }));
         threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)
@@ -162,7 +166,7 @@ const HeatmapContainer = () => {
                                            onChange={() => setRelativeFreqs(!relativeFreqs)}/>
                             </div>
                             {relativeFreqs ?
-                                <p>Values in current view min: 10<sup>-{(-Math.log10(minExprFreq)).toFixed(4)}</sup> max: 10<sup>-{(-Math.log10(maxExprFreq)).toFixed(4)}</sup></p>
+                                <p>Values in current view min: 10<sup>-{(-Math.log10(minExprFreq)).toFixed(1)}</sup> max: 10<sup>-{(-Math.log10(maxExprFreq)).toFixed(1)}</sup></p>
                                 : null}
                         </div>
                         <Accordion defaultActiveKey="0">
