@@ -8,7 +8,7 @@ import {
     FormGroup,
     Button,
     Spinner,
-    ToggleButtonGroup, ToggleButton, FormCheck, Accordion, Card, FormLabel, FormControl
+    ToggleButtonGroup, ToggleButton, FormCheck, Accordion, Card, FormLabel, FormControl, Tabs, Tab, TabPane, Nav
 } from "react-bootstrap";
 import _ from 'lodash';
 import MultiSelect from "../components/multiselect/MultiSelect";
@@ -156,12 +156,12 @@ const HeatmapContainer = () => {
                             </ToggleButtonGroup>
                             <div>
                                 <br/>
-                            {dotplot ?
-                                <div>
+                                {dotplot ?
+                                    <div>
                                         <FormCheck type="checkbox" label="Colored dots" checked={coloredDots}
                                                    onChange={() => setColoredDots(!coloredDots)}/>
-                                </div>
-                                : null}
+                                    </div>
+                                    : null}
                                 <FormCheck type="checkbox" label="Normalize values" checked={relativeFreqs}
                                            onChange={() => setRelativeFreqs(!relativeFreqs)}/>
                             </div>
@@ -169,58 +169,54 @@ const HeatmapContainer = () => {
                                 <p>Values in current view min: 10<sup>-{(-Math.log10(minExprFreq)).toFixed(1)}</sup> max: 10<sup>-{(-Math.log10(maxExprFreq)).toFixed(1)}</sup></p>
                                 : null}
                         </div>
-                        <Accordion defaultActiveKey="0">
-                            <Card>
-                                <Card.Header>
-                                    <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                                        Select Genes
-                                    </Accordion.Toggle>
-                                </Card.Header>
-                                <Accordion.Collapse eventKey="0">
-                                    <Card.Body>
-                                        <MultiSelect
-                                            linkWB={"https://wormbase.org/species/c_elegans/gene"}
-                                            itemsNameSingular={"gene"}
-                                            itemsNamePlural={"genes"}
-                                            items={genes}
-                                            addItemFunction={(gene) => setGenes([...genes, gene])}
-                                            remItemFunction={(gene) => setGenes(genes.filter(g => g !== gene))}
-                                            searchType={"gene"}
-                                            sampleQuery={"e.g. dbl-1"}
-                                            listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}
-                                        />
-                                    </Card.Body>
-                                </Accordion.Collapse>
-                            </Card>
-                            <Card>
-                                <Card.Header>
-                                    <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                                        Select Cells
-                                    </Accordion.Toggle>
-                                </Card.Header>
-                                <Accordion.Collapse eventKey="1">
-                                    <Card.Body>
-                                        <FormGroup controlId="exampleForm.ControlTextarea1">
-                                            <FormLabel>Edit list directly</FormLabel>
-                                            <FormControl as="textarea" rows={6}
-                                                         value={cells.join('\n')}
-                                                         onChange={(event) => setCells(event.target.value.split('\n'))}/>
-                                        </FormGroup>
-                                        {/*<MultiSelect*/}
-                                        {/*    linkWB={"https://wormbase.org/species/c_elegans/gene"}*/}
-                                        {/*    itemsNameSingular={"cell"}*/}
-                                        {/*    itemsNamePlural={"cells"}*/}
-                                        {/*    items={cells}*/}
-                                        {/*    addItemFunction={(cell) => setCells([...cells, cell])}*/}
-                                        {/*    remItemFunction={(cell) => setCells(cells.filter(c => c !== cell))}*/}
-                                        {/*    searchType={"wbbt"}*/}
-                                        {/*    sampleQuery={"e.g. ANA"}*/}
-                                        {/*    listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}*/}
-                                        {/*/>*/}
-                                    </Card.Body>
-                                </Accordion.Collapse>
-                            </Card>
-                        </Accordion>
+
+                        <Tab.Container defaultActiveKey={1}>
+                            <Row>
+                                <Col>
+                                    <Nav variant="tabs" defaultActiveKey={1}>
+                                        <Nav.Item>
+                                            <Button onClick={() => fetchData()}>Refresh</Button>&nbsp;
+                                        </Nav.Item>
+                                        <Nav.Item>
+                                            <Nav.Link eventKey={1}>Genes</Nav.Link>
+                                        </Nav.Item>
+                                        <Nav.Item>
+                                            <Nav.Link eventKey={2}>Cells</Nav.Link>
+                                        </Nav.Item>
+                                    </Nav>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <Tab.Content>
+                                        <Tab.Pane eventKey={0}>Test</Tab.Pane>
+                                        <Tab.Pane eventKey={1}>
+                                            <br/>
+                                            <MultiSelect
+                                                linkWB={"https://wormbase.org/species/c_elegans/gene"}
+                                                itemsNameSingular={"gene"}
+                                                itemsNamePlural={"genes"}
+                                                items={genes}
+                                                addItemFunction={(gene) => setGenes([...genes, gene])}
+                                                remItemFunction={(gene) => setGenes(genes.filter(g => g !== gene))}
+                                                searchType={"gene"}
+                                                sampleQuery={"e.g. dbl-1"}
+                                                listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}
+                                            />
+                                        </Tab.Pane>
+                                        <Tab.Pane eventKey={2}>
+                                            <br/>
+                                            <FormGroup controlId="exampleForm.ControlTextarea1">
+                                                <FormLabel>Edit list directly</FormLabel>
+                                                <FormControl as="textarea" rows={6}
+                                                             value={cells.join('\n')}
+                                                             onChange={(event) => setCells(event.target.value.split('\n'))}/>
+                                            </FormGroup>
+                                        </Tab.Pane>
+                                    </Tab.Content>
+                                </Col>
+                            </Row>
+                        </Tab.Container>
                         <br/>
                         {/*<FormGroup controlId="exampleForm.ControlTextarea1">*/}
                         {/*    <FormLabel>Genes</FormLabel>*/}
@@ -228,7 +224,6 @@ const HeatmapContainer = () => {
                         {/*                 value={genes.join('\n')}*/}
                         {/*                 onChange={(event) => setGenes(event.target.value.split('\n'))}/>*/}
                         {/*</FormGroup>*/}
-                        <Button onClick={() => fetchData()}>Refresh</Button>
                         <br/>
                         <br/>
                     </Col>
