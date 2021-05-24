@@ -5,18 +5,18 @@ import {
     Col,
     Row,
     Container,
-    FormGroup,
     Button,
     Spinner,
-    ToggleButtonGroup, ToggleButton, FormCheck, Accordion, Card, FormLabel, FormControl, Tabs, Tab, TabPane, Nav
+    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Card
 } from "react-bootstrap";
 import _ from 'lodash';
 import MultiSelect from "../components/multiselect/MultiSelect";
+import {useQuery} from "react-query";
 
 const HeatmapContainer = () => {
 
     const [genes, setGenes] = useState([]);
-    const [cells, setCells] = useState([]);
+    const [cells, setCells] = useState(new Set());
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [dotplot, setDotplot] = useState(false);
@@ -27,6 +27,9 @@ const HeatmapContainer = () => {
     const [relativeFreqs, setRelativeFreqs] = useState(true);
     const [maxExprFreq, setMaxExprFreq] = useState(0);
     const [minExprFreq, setMinExprFreq] = useState(0);
+    const [showAllCells, setShowAllCells] = useState(false);
+
+    const allCells = useQuery('allCells', () => axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_CELLS));
 
     useEffect(() => {
         fetchData();
@@ -69,7 +72,7 @@ const HeatmapContainer = () => {
                 }
             }
         });
-        const res = await axios.post(apiEndpoint, {gene_ids: gene_ids, cell_names: cells});
+        const res = await axios.post(apiEndpoint, {gene_ids: gene_ids, cell_names: [...cells]});
         let threeColsData = [];
         let newGeneLabels = [];
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, values]) => {
@@ -95,7 +98,7 @@ const HeatmapContainer = () => {
         setMaxExprFreq(Math.max(...threeColsData.map(d => d.value)));
         setMinExprFreq(Math.min(...threeColsData.map(d => d.value)));
         setGenes(newGeneLabels.map(pair => pair[0] + " ( " + pair[1] + " )").sort());
-        setCells([...new Set(threeColsData.map(e => e.variable))]);
+        setCells(new Set(threeColsData.map(e => e.variable)));
         setData(threeColsData);
         setIsLoading(false);
     }
@@ -207,12 +210,45 @@ const HeatmapContainer = () => {
                                         </Tab.Pane>
                                         <Tab.Pane eventKey={2}>
                                             <br/>
-                                            <FormGroup controlId="exampleForm.ControlTextarea1">
-                                                <FormLabel>Edit list directly</FormLabel>
-                                                <FormControl as="textarea" rows={6}
-                                                             value={cells.join('\n')}
-                                                             onChange={(event) => setCells(event.target.value.split('\n'))}/>
-                                            </FormGroup>
+                                            {allCells.isLoading ?
+                                                <Spinner animation="grow"/>
+                                                :
+                                                <>
+                                                <Card style={{height: "400px", overflowY: "scroll"}}>
+                                                    <Card.Body>
+                                                    {allCells.data.data.filter(cell => showAllCells || cells.has(cell)).sort().map(cell =>
+                                                    <FormCheck type="checkbox"
+                                                               label={cell}
+                                                               checked={cells.has(cell)}
+                                                               onChange={(event) => {
+                                                                   if (event.target.checked) {
+                                                                       setCells(new Set([...cells, cell]));
+                                                                   } else {
+                                                                       setCells(new Set([...cells].filter(x => x !== cell)))
+                                                                   }
+                                                               }}
+                                                    />)}</Card.Body></Card>
+                                                    <br/>
+                                                    <Container fluid>
+                                                        <Row>
+                                                            <Col>
+                                                                <FormCheck type="checkbox"
+                                                                           label="show selected only"
+                                                                           checked={!showAllCells}
+                                                                           onChange={(event) => setShowAllCells(!event.target.checked)}
+                                                                />
+                                                            </Col>
+                                                            <Col>
+                                                                <Button variant="outline-primary" size="sm"
+                                                                        onClick={() => setCells(new Set(allCells.data.data))}>
+                                                                    Select All</Button> <Button variant="outline-primary"
+                                                                                                size="sm"
+                                                                                                onClick={() => setCells(new Set())}>Deselect All</Button>
+                                                            </Col>
+                                                        </Row>
+                                                    </Container>
+                                                </>
+                                            }
                                         </Tab.Pane>
                                     </Tab.Content>
                                 </Col>
