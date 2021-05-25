@@ -229,7 +229,7 @@ const HeatmapContainer = () => {
                                                 <Spinner animation="grow"/>
                                                 :
                                                 <>
-                                                    <FormControl type="text" size="sm" placeholder="filter cells"
+                                                    <FormControl type="text" size="sm" placeholder="Start typing to filter"
                                                                  onChange={(event) => setFilterCells(event.target.value)}/>
                                                     <br/>
                                                 <Card style={{height: "350px", overflowY: "scroll"}}>
