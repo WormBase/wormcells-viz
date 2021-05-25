@@ -75,6 +75,7 @@ const HeatmapContainer = () => {
         const res = await axios.post(apiEndpoint, {gene_ids: gene_ids, cell_names: [...cells]});
         let threeColsData = [];
         let newGeneLabels = [];
+        let newCells = new Set();
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, values]) => {
             let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/concise_description')
             let gene_name = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/name')
@@ -82,7 +83,7 @@ const HeatmapContainer = () => {
             Object.entries(values).forEach(([cell_name, value]) => {
                 threeColsData.push({
                     group: gene_name.data.name.data.label,
-                    variable: cell_name, value: value,
+                    variable: cell_name.replaceAll('_', ' ').trim(), value: value,
                     tooltip_html: "<div id='currentTooltip'/><button class='btn-secondary small' style='float: right;' " +
                         "onclick='(function(){getElementById(\"currentTooltip\").parentElement.style.opacity = \"0\"; " +
                         "getElementById(\"currentTooltip\").parentElement.innerHTML = \"\";})();'>X</button>" +
@@ -92,13 +93,13 @@ const HeatmapContainer = () => {
                         "<br/><a href='ridge_line/" + gene_id + "'>View ridgeline plot for gene</a><br/>Cell Name: " +
                         cell_name + "<br/>" + "Expression Frequency: 10<sup>-" + (-Math.log10(value)).toFixed(1) + "</sup>"
                 });
+                newCells.add(cell_name);
             })
         }));
         threeColsData = threeColsData.sort((a, b) => a.group + a.variable > b.group + b.variable ? 1 : -1)
         setMaxExprFreq(Math.max(...threeColsData.map(d => d.value)));
         setMinExprFreq(Math.min(...threeColsData.map(d => d.value)));
         setGenes(newGeneLabels.map(pair => pair[0] + " ( " + pair[1] + " )").sort());
-        let newCells = new Set(threeColsData.map(e => e.variable));
         setCells(newCells);
         setData(threeColsData);
         setIsLoading(false);
