@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import { Heatmap, Dotplot } from "@wormbase/d3-charts";
 import axios from 'axios';
+import {saveSvgAsPng} from 'save-svg-as-png'
 import {
     Col,
     Row,
@@ -155,27 +156,37 @@ const HeatmapContainer = () => {
                         </Container>
                     </Col>
                     <Col sm={5}>
-                        <div align="right">
-                            <ToggleButtonGroup type="radio"  name="options" defaultValue={1}>
-                                <ToggleButton variant="outline-primary" value={1} onClick={() => setDotplot(false)}>HeatMap</ToggleButton>
-                                <ToggleButton variant="outline-primary" value={2} onClick={() => setDotplot(true)}>DotPlot</ToggleButton>
-                            </ToggleButtonGroup>
-                            <div>
-                                <br/>
-                                {dotplot ?
-                                    <div>
-                                        <FormCheck type="checkbox" label="Colored dots" checked={coloredDots}
-                                                   onChange={() => setColoredDots(!coloredDots)}/>
+                        <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
+                            <Row>
+                                <Col>
+                                    {isLoading ? <Spinner animation="grow"/> : <Button variant="outline-primary" size="sm"
+                                            onClick={() => saveSvgAsPng(document.getElementById("heatmap-div").children[0], "diagram.png")}>save image</Button>}
+                                </Col>
+                                <Col>
+                                    <div align="right">
+                                        <ToggleButtonGroup type="radio"  name="options" defaultValue={1}>
+                                            <ToggleButton variant="outline-primary" value={1} onClick={() => setDotplot(false)}>HeatMap</ToggleButton>
+                                            <ToggleButton variant="outline-primary" value={2} onClick={() => setDotplot(true)}>DotPlot</ToggleButton>
+                                        </ToggleButtonGroup>
                                     </div>
-                                    : null}
-                                <FormCheck type="checkbox" label="Normalize values" checked={relativeFreqs}
-                                           onChange={() => setRelativeFreqs(!relativeFreqs)}/>
-                            </div>
+                                </Col>
+                            </Row>
+
+                        </Container>
+                        <div align="right">
+                            <br/>
+                            {dotplot ?
+                                <div>
+                                    <FormCheck type="checkbox" label="Colored dots" checked={coloredDots}
+                                               onChange={() => setColoredDots(!coloredDots)}/>
+                                </div>
+                                : null}
+                            <FormCheck type="checkbox" label="Normalize values" checked={relativeFreqs}
+                                       onChange={() => setRelativeFreqs(!relativeFreqs)}/>
                             {relativeFreqs ?
                                 <p>Values in current view min: 10<sup>-{(-Math.log10(minExprFreq)).toFixed(1)}</sup> max: 10<sup>-{(-Math.log10(maxExprFreq)).toFixed(1)}</sup></p>
                                 : null}
                         </div>
-
                         <Tab.Container defaultActiveKey={1}>
                             <Row>
                                 <Col>

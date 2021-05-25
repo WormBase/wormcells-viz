@@ -1,9 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Col, Container, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
+import {Button, Col, Container, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
 import axios from "axios";
 import { Ridgeline } from "@wormbase/d3-charts";
 import AsyncTypeahead from "react-bootstrap-typeahead/lib/components/AsyncTypeahead";
 import {useQuery} from "react-query";
+import {saveSvgAsPng} from "save-svg-as-png";
 
 
 const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
@@ -98,6 +99,10 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                         <div id="ridgeline-div" ref={ridgeLineRef}/>
                     </Col>
                     <Col sm={4}>
+                        {isLoading ? <Spinner animation="grow"/> : <Button variant="outline-primary" size="sm"
+                                            onClick={() => saveSvgAsPng(document.getElementById("ridgeline-div").children[0], "diagram.png")}>save image</Button>}
+                        <br/>
+                        <br/>
                         {allGenes.isLoading ?
                             <Spinner animation="grow"/>
                             :
