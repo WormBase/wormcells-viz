@@ -8,7 +8,7 @@ import {
     Container,
     Button,
     Spinner,
-    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Card
+    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Card, FormControl
 } from "react-bootstrap";
 import _ from 'lodash';
 import MultiSelect from "../components/multiselect/MultiSelect";
@@ -28,7 +28,8 @@ const HeatmapContainer = () => {
     const [relativeFreqs, setRelativeFreqs] = useState(true);
     const [maxExprFreq, setMaxExprFreq] = useState(0);
     const [minExprFreq, setMinExprFreq] = useState(0);
-    const [showAllCells, setShowAllCells] = useState(false);
+    const [showAllCells, setShowAllCells] = useState(true);
+    const [filterCells, setFilterCells] = useState('');
 
     const allCells = useQuery('allCells', () => axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_CELLS));
 
@@ -104,7 +105,7 @@ const HeatmapContainer = () => {
         setCells(newCells);
         setData(threeColsData);
         setIsLoading(false);
-        setHeatMapSize(heatMapSize => ({...heatMapSize, height: newCells.size * 32}));
+        setHeatMapSize(heatMapSize => ({...heatMapSize, height: newCells.size * 32 + heatMapSize.top + heatMapSize.bottom}));
     }
 
     const drawHeatmap = async () => {
@@ -192,7 +193,7 @@ const HeatmapContainer = () => {
                                 <Col>
                                     <Nav variant="tabs" defaultActiveKey={1}>
                                         <Nav.Item>
-                                            <Button onClick={() => fetchData()}>Refresh</Button>&nbsp;
+                                            <Button onClick={() => fetchData()}>Refresh</Button><div style={{width: '7em'}}/>
                                         </Nav.Item>
                                         <Nav.Item>
                                             <Nav.Link eventKey={1}>Genes</Nav.Link>
@@ -228,9 +229,14 @@ const HeatmapContainer = () => {
                                                 <Spinner animation="grow"/>
                                                 :
                                                 <>
-                                                <Card style={{height: "400px", overflowY: "scroll"}}>
+                                                    <FormControl type="text" size="sm" placeholder="filter cells"
+                                                                 onChange={(event) => setFilterCells(event.target.value)}/>
+                                                    <br/>
+                                                <Card style={{height: "350px", overflowY: "scroll"}}>
                                                     <Card.Body>
-                                                    {allCells.data.data.filter(cell => showAllCells || cells.has(cell)).sort().map(cell =>
+                                                    {allCells.data.data.filter(cell => showAllCells || cells.has(cell))
+                                                        .filter(cell => filterCells === '' || cell.startsWith(filterCells))
+                                                        .sort().map(cell =>
                                                     <FormCheck type="checkbox"
                                                                label={cell}
                                                                checked={cells.has(cell)}
