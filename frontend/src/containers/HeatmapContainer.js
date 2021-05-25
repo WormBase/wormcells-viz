@@ -92,7 +92,7 @@ const HeatmapContainer = () => {
                         "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/" + gene_id +
                         "' target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data.name.data.label +
                         "<br/>Gene description: " + desc.data.concise_description.data.text +
-                        "<br/><a href='ridge_line/" + gene_id + "'>View ridgeline plot for gene</a><br/>Cell Name: " +
+                        "<br/><a href='ridge_line/" + gene_id + "'>View ridgeline plot for this gene</a><br/>Cell Name: " +
                         cell_name + "<br/>" + "Expression Frequency: 10<sup>-" + (-Math.log10(value)).toFixed(1) + "</sup>"
                 });
                 newCells.add(cell_name);
