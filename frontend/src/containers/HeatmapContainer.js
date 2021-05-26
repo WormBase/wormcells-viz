@@ -160,7 +160,7 @@ const HeatmapContainer = () => {
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>
-                                    {isLoading ? <Spinner animation="grow"/> : <Button variant="outline-primary" size="sm"
+                                    {isLoading ? null : <Button variant="outline-primary" size="sm"
                                             onClick={() => saveSvgAsPng(document.getElementById("heatmap-div").children[0], "diagram.png")}>save image</Button>}
                                 </Col>
                                 <Col>

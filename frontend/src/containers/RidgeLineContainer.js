@@ -99,7 +99,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                         <div id="ridgeline-div" ref={ridgeLineRef}/>
                     </Col>
                     <Col sm={4}>
-                        {isLoading ? <Spinner animation="grow"/> : <Button variant="outline-primary" size="sm"
+                        {isLoading ? null : <Button variant="outline-primary" size="sm"
                                             onClick={() => saveSvgAsPng(document.getElementById("ridgeline-div").children[0], "diagram.png")}>save image</Button>}
                         <br/>
                         <br/>

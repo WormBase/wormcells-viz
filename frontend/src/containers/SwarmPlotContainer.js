@@ -90,7 +90,7 @@ const SwarmPlotContainer = () => {
                         <div id="swarmplot-div" ref={swarmRef}/>
                     </Col>
                     <Col sm={4}>
-                        {isLoading ? <Spinner animation="grow"/> : <Button variant="outline-primary" size="sm"
+                        {isLoading ? null : <Button variant="outline-primary" size="sm"
                                             onClick={() => saveSvgAsPng(document.getElementById("swarmplot-div").children[0], "diagram.png")}>save image</Button>}
                         <br/>
                         <br/>
