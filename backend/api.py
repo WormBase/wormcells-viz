@@ -3,6 +3,7 @@
 import argparse
 import json
 import logging
+import math
 from collections import defaultdict
 from typing import List
 
@@ -63,11 +64,25 @@ class FileStorageEngine(object):
                     results[cell_type].append(col_value)
         return results, gene_id
 
-    def get_gene_list(self):
+    def get_data_cell(self, cell: str = None):
+        cell = cell if cell else [cell for cell in list(self.mean_matrix) if cell != 'gene_id'][0]
+        genes_series = self.mean_matrix['gene_id']
+        values_series = self.mean_matrix[cell]
+        best_genes = [gene_id for gene_id, _ in sorted(zip(genes_series, values_series), key=lambda x: x[1])[0:25]]
+        cell_names = self.get_all_cells()
+        results = {}
+        for gene_id in best_genes:
+            ref_val = float(self.mean_matrix.loc[self.mean_matrix.gene_id == gene_id, cell])
+            values = self.mean_matrix.loc[self.mean_matrix.gene_id == gene_id]
+            results[gene_id] = (ref_val, [(cell_name, float(values[cell_name]), math.log2(values[cell_name]/ref_val))
+                                          for cell_name in cell_names if float(values[cell_name]) > 0])
+        return cell, results
+
+    def get_all_genes(self):
         return list(self.mean_matrix.gene_id)
 
-    def get_cell_list(self):
-        return [cell for cell in list(self.mean_matrix) if cell != 'gene_id']
+    def get_all_cells(self):
+        return [cell for cell in list(self.mean_matrix.columns) if cell != 'gene_id']
 
 
 class GeneCellMatrixReader:
@@ -108,6 +123,25 @@ class SingleGeneReader:
             resp.status = falcon.HTTP_BAD_REQUEST
 
 
+class SingleCellReader:
+
+    def __init__(self, storage_engine: FileStorageEngine):
+        self.storage = storage_engine
+        self.logger = logging.getLogger(__name__)
+
+    def on_post(self, req, resp):
+        if req.media:
+            cell = req.media.get("cell")
+            try:
+                cell_name, results = self.storage.get_data_cell(cell=cell)
+            except KeyError:
+                cell_name, results = 'None', []
+            resp.body = f'{{"response": {json.dumps(results)}, "cell": "{cell_name}"}}'
+            resp.status = falcon.HTTP_OK
+        else:
+            resp.status = falcon.HTTP_BAD_REQUEST
+
+
 class GenesReader:
 
     def __init__(self, storage_engine: FileStorageEngine):
@@ -115,7 +149,7 @@ class GenesReader:
         self.logger = logging.getLogger(__name__)
 
     def on_get(self, req, resp):
-        resp.body = json.dumps(self.storage.get_gene_list())
+        resp.body = json.dumps(self.storage.get_all_genes())
         resp.status = falcon.HTTP_OK
 
 
@@ -126,7 +160,7 @@ class CellsReader:
         self.logger = logging.getLogger(__name__)
 
     def on_get(self, req, resp):
-        resp.body = json.dumps(self.storage.get_cell_list())
+        resp.body = json.dumps(self.storage.get_all_cells())
         resp.status = falcon.HTTP_OK
 
 
@@ -151,6 +185,7 @@ def main():
     app.add_route('/get_data_matrix', gene_cell_matrix_reader)
     single_gene_reader = SingleGeneReader(file_storage)
     app.add_route('/get_data_gene', single_gene_reader)
+    app.add_route('/get_data_cell', SingleCellReader(file_storage))
     app.add_route('/get_all_genes', GenesReader(file_storage))
     app.add_route('/get_all_cells', CellsReader(file_storage))
 
@@ -169,6 +204,7 @@ else:
     app.add_route('/get_data_matrix', gene_cell_matrix_reader)
     single_gene_reader = SingleGeneReader(file_storage)
     app.add_route('/get_data_gene', single_gene_reader)
+    app.add_route('/get_data_cell', SingleCellReader(file_storage))
     app.add_route('/get_all_genes', GenesReader(file_storage))
     app.add_route('/get_all_cells', CellsReader(file_storage))
 
