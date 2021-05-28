@@ -5,12 +5,16 @@ import axios from "axios";
 import {Button, Col, Container, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
 import {saveSvgAsPng} from "save-svg-as-png";
 import {Typeahead} from "react-bootstrap-typeahead";
+import MultiSelect from "../components/multiselect/MultiSelect";
+import _ from 'lodash';
 
 const SwarmPlotContainer = () => {
     const [cell, setCell] = useState('');
+    const [genes, setGenes] = useState([]);
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const swarmRef = useRef(null);
+
     const [swarmplotSize, setSwarmplotSize] = useState({top: 50, right: 25, bottom: 30, left: 120, width: 1200,
         height: 650});
 
@@ -25,6 +29,12 @@ const SwarmPlotContainer = () => {
             drawSwarmplot();
         }
     }, [data, swarmplotSize]);
+
+    useEffect(() => {
+        if (data != null) {
+            updateSelectedGenes();
+        }
+    }, [genes])
 
     useEffect(() => {
         let width = swarmRef.current ? swarmRef.current.offsetWidth : 0
@@ -47,6 +57,7 @@ const SwarmPlotContainer = () => {
         const res = await axios.post(apiEndpoint, {cell: cell});
         setCell(res.data.cell);
         let dataMod = [];
+        let selectedGenesSet = new Set(genes.map(g => g.split(" (")[0]))
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, [refVal, values]]) => {
             let gene_name = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/name')
             gene_name = gene_name.data.name.data.label;
@@ -60,7 +71,8 @@ const SwarmPlotContainer = () => {
                             "<strong>Gene</strong>: " + gene_name + "<br/>" +
                             "<strong>" + cell_name + " expression</strong>: 10<sup>-" + (-Math.log10(rawVal)).toFixed(1) + "</sup><br/>" +
                             "<strong>" + res.data.cell + " expression</strong>: 10<sup>-" + (-Math.log10(refVal)).toFixed(1) + "</sup><br/>" +
-                            "<strong>log2 fold change</strong>: " + logfc.toFixed(1) + "</div>"
+                            "<strong>log2 fold change</strong>: " + logfc.toFixed(1) + "</div>",
+                        selected: selectedGenesSet.has(gene_name)
                     })
             });
         }));
@@ -76,38 +88,81 @@ const SwarmPlotContainer = () => {
         setIsLoading(false);
     }
 
+    const updateSelectedGenes = () => {
+        let newData = _.cloneDeep(data);
+        let selectedGenesSet = new Set(genes.map(g => g.split(" (")[0]))
+        newData.forEach((d, index, origArray) => {
+            if (selectedGenesSet.has(d.y)) {
+                origArray[index].selected = true;
+            }
+        });
+        setData(newData);
+    }
+
     return (
         <div>
             <Container fluid>
                 <Row>
-                    <Col sm={8} center>
-                        <h5 className="text-center">Relative Log-fold change in expression of top 25 specific genes for cell '{cell}'</h5>
+                    <Col sm={7}>
+                        <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
+                            <Row>
+                                <Col sm={12} center>
+                                    <h5 className="text-center">Relative Log-fold change in expression of top 25 specific genes for cell '{cell}'</h5>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
+                                    <div id="swarmplot-div" ref={swarmRef}/>
+                                </Col>
+                            </Row>
+                        </Container>
                     </Col>
-                </Row>
-                <Row>
-                    <Col sm={8}>
-                        <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
-                        <div id="swarmplot-div" ref={swarmRef}/>
-                    </Col>
-                    <Col sm={4}>
-                        {isLoading ? null : <Button variant="outline-primary" size="sm"
+                    <Col sm={5}>
+                        <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
+                            <Row>
+                                <Col>
+                                    {isLoading ? null :
+                                    <Button variant="outline-primary" size="sm"
                                             onClick={() => saveSvgAsPng(document.getElementById("swarmplot-div").children[0], "diagram.png")}>save image</Button>}
-                        <br/>
-                        <br/>
-                        {allCells.isLoading ?
-                            <Spinner animation="grow"/>
-                            :
-                            <FormGroup controlId="formBasicEmail">
-                                <FormLabel>Select Cell</FormLabel>
-                                <Typeahead
-                                    options={[...allCells.data.data]}
-                                    onChange={(selected) => {
-                                        if (selected !== undefined && selected.length > 0) {
-                                            setCell(selected[0]);
-                                        }
-                                    }}
-                                />
-                            </FormGroup>}
+                                </Col>
+                            </Row>
+                            <Row><Col>&nbsp;</Col></Row>
+                            <Row><Col>&nbsp;</Col></Row>
+                            <Row>
+                                <Col>
+                                    {allCells.isLoading ? null :
+                                    <FormGroup controlId="formBasicEmail">
+                                        <FormLabel>Select Cell</FormLabel>
+                                        <Typeahead
+                                            options={[...allCells.data.data]}
+                                            onChange={(selected) => {
+                                                if (selected !== undefined && selected.length > 0) {
+                                                    setCell(selected[0]);
+                                                }
+                                            }}
+                                        />
+                                    </FormGroup>}
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <FormLabel>Select Genes to Highlight</FormLabel>
+                                    <MultiSelect
+                                        linkWB={"https://wormbase.org/species/c_elegans/gene"}
+                                        itemsNameSingular={"gene"}
+                                        itemsNamePlural={"genes"}
+                                        items={genes}
+                                        addMultipleItemsFunction={(items) => setGenes([...genes, ...items])}
+                                        remAllItems={() => setGenes([])}
+                                        remItemFunction={(gene) => setGenes(genes.filter(g => g !== gene))}
+                                        searchType={"gene"}
+                                        sampleQuery={"e.g. dbl-1"}
+                                        listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}
+                                    />
+                                </Col>
+                            </Row>
+                        </Container>
                     </Col>
                 </Row>
             </Container>
