@@ -23,7 +23,7 @@ const HeatmapContainer = () => {
     const [dotplot, setDotplot] = useState(false);
     const [coloredDots, setColoredDots] = useState(true);
     const heatMapRef = useRef(null);
-    const [heatMapSize, setHeatMapSize] = useState({top: 10, right: 25, bottom: 100, left: 100, width: 600,
+    const [heatMapSize, setHeatMapSize] = useState({top: 10, right: 15, bottom: 100, left: 140, width: 600,
         height: 650})
     const [relativeFreqs, setRelativeFreqs] = useState(true);
     const [maxExprFreq, setMaxExprFreq] = useState(0);
@@ -128,10 +128,10 @@ const HeatmapContainer = () => {
                 circleSizeMultiplier = 1;
             }
             d3Chart = new Dotplot('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, maxValue, 0.001, circleSizeMultiplier, coloredDots, 20);
+                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, maxValue, 0.001, circleSizeMultiplier, coloredDots, 24, 12);
         } else {
             d3Chart = new Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-                heatMapSize.left, heatMapSize.width, heatMapSize.height, minValue, maxValue, 20);
+                heatMapSize.left, heatMapSize.width, heatMapSize.height, minValue, maxValue, 24, 12);
         }
         d3Chart.draw(dataMod);
         setIsLoading(false);
