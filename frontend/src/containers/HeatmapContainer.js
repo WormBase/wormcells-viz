@@ -1,6 +1,8 @@
 import React, {useState, useEffect, useRef} from "react";
 import { Heatmap, Dotplot } from "@wormbase/d3-charts";
 import axios from 'axios';
+import * as d3 from 'd3';
+import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {saveSvgAsPng} from 'save-svg-as-png'
 import {
     Col,
@@ -8,11 +10,12 @@ import {
     Container,
     Button,
     Spinner,
-    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Card, FormControl
+    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Card, FormControl, Form
 } from "react-bootstrap";
 import _ from 'lodash';
 import MultiSelect from "../components/multiselect/MultiSelect";
 import {useQuery} from "react-query";
+import {clearLegend, drawHeatmapLegend} from "../d3-addons";
 
 const HeatmapContainer = () => {
 
@@ -23,7 +26,7 @@ const HeatmapContainer = () => {
     const [dotplot, setDotplot] = useState(false);
     const [coloredDots, setColoredDots] = useState(true);
     const heatMapRef = useRef(null);
-    const [heatMapSize, setHeatMapSize] = useState({top: 10, right: 15, bottom: 100, left: 140, width: 600,
+    const [heatMapSize, setHeatMapSize] = useState({top: 0, right: 15, bottom: 80, left: 140, width: 600,
         height: 650})
     const [relativeFreqs, setRelativeFreqs] = useState(true);
     const [maxExprFreq, setMaxExprFreq] = useState(0);
@@ -128,12 +131,25 @@ const HeatmapContainer = () => {
                 circleSizeMultiplier = 1;
             }
             d3Chart = new Dotplot('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
-                heatMapSize.left, heatMapSize.width, heatMapSize.height, 0, maxValue, 0.001, circleSizeMultiplier, coloredDots, 24, 12);
+                heatMapSize.left, heatMapSize.width, heatMapSize.height, minValue, maxValue, 0.001, circleSizeMultiplier, coloredDots, 24, 12);
         } else {
             d3Chart = new Heatmap('#heatmap-div', heatMapSize.top, heatMapSize.right, heatMapSize.bottom,
                 heatMapSize.left, heatMapSize.width, heatMapSize.height, minValue, maxValue, 24, 12);
         }
         d3Chart.draw(dataMod);
+        let legendDomain = [minExprFreq, maxExprFreq];
+        if (!relativeFreqs) {
+            legendDomain = [0, 1]
+        }
+        let myColor = d3.scaleSequential()
+            .interpolator(d3ScaleChromatic.interpolateViridis)
+            .domain(legendDomain);
+
+        if (!coloredDots && dotplot) {
+            clearLegend("#legend");
+        } else {
+            drawHeatmapLegend("#legend", myColor, minValue, maxValue, 50, heatMapSize.width, 0, heatMapSize.right, 20, heatMapSize.left)
+        }
         setIsLoading(false);
     }
 
@@ -142,7 +158,7 @@ const HeatmapContainer = () => {
             <Container fluid>
                 <Row>
                     <Col md={7} center>
-                        <Container fluid>
+                        <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>
                                     <h2 className="text-center">Gene Expression {dotplot ? "Dotplot": "Heatmap"} </h2>
@@ -152,6 +168,12 @@ const HeatmapContainer = () => {
                                 <Col>
                                     <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
                                     <div id="heatmap-div" ref={heatMapRef}/>
+                                    <div id="legend"/>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+
                                 </Col>
                             </Row>
                         </Container>
@@ -166,8 +188,8 @@ const HeatmapContainer = () => {
                                 <Col>
                                     <div align="right">
                                         <ToggleButtonGroup type="radio"  name="options" defaultValue={1}>
-                                            <ToggleButton variant="outline-primary" value={1} onClick={() => setDotplot(false)}>HeatMap</ToggleButton>
-                                            <ToggleButton variant="outline-primary" value={2} onClick={() => setDotplot(true)}>DotPlot</ToggleButton>
+                                            <ToggleButton variant="outline-primary" size="sm" value={1} onClick={() => setDotplot(false)}>HeatMap</ToggleButton>
+                                            <ToggleButton variant="outline-primary" size="sm" value={2} onClick={() => setDotplot(true)}>DotPlot</ToggleButton>
                                         </ToggleButtonGroup>
                                     </div>
                                 </Col>
@@ -176,17 +198,19 @@ const HeatmapContainer = () => {
                         </Container>
                         <div align="right">
                             <br/>
+                            <Form>
+                                <div className="mb-2">
                             {dotplot ?
-                                <div>
-                                    <FormCheck type="checkbox" label="Colored dots" checked={coloredDots}
-                                               onChange={() => setColoredDots(!coloredDots)}/>
-                                </div>
+                                <FormCheck inline type="checkbox" label="Colored dots" checked={coloredDots}
+                                           onChange={() => setColoredDots(!coloredDots)}/>
                                 : null}
-                            <FormCheck type="checkbox" label="Normalize values" checked={relativeFreqs}
+                            <FormCheck inline type="checkbox" label="Normalize values" checked={relativeFreqs}
                                        onChange={() => setRelativeFreqs(!relativeFreqs)}/>
+                                </div>
                             {relativeFreqs ?
                                 <p>Values in current view min: 10<sup>-{(-Math.log10(minExprFreq)).toFixed(1)}</sup> max: 10<sup>-{(-Math.log10(maxExprFreq)).toFixed(1)}</sup></p>
                                 : null}
+                            </Form>
                         </div>
                         <Tab.Container defaultActiveKey={1}>
                             <Row>
