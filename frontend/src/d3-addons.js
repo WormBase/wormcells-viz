@@ -49,7 +49,7 @@ export function drawHeatmapLegend(selector_id, colorscale, minValue, maxValue, h
     var legendaxis = d3.axisBottom()
         .scale(legendscale)
         .tickSize(6)
-        .ticks(20)
+        .ticks(11)
         .tickFormat(d3.format(".1e"));
 
     var svg = d3.select(selector_id)
