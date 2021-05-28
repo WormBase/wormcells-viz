@@ -109,7 +109,7 @@ const SwarmPlotContainer = () => {
         <div>
             <Container fluid>
                 <Row>
-                    <Col sm={7}>
+                    <Col md={7}>
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col sm={12} center>
@@ -124,7 +124,7 @@ const SwarmPlotContainer = () => {
                             </Row>
                         </Container>
                     </Col>
-                    <Col sm={5}>
+                    <Col md={5}>
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>

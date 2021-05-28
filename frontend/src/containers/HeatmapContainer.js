@@ -141,7 +141,7 @@ const HeatmapContainer = () => {
         <div>
             <Container fluid>
                 <Row>
-                    <Col sm={7} center>
+                    <Col md={7} center>
                         <Container fluid>
                             <Row>
                                 <Col>
@@ -156,7 +156,7 @@ const HeatmapContainer = () => {
                             </Row>
                         </Container>
                     </Col>
-                    <Col sm={5}>
+                    <Col md={5}>
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>

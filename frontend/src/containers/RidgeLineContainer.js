@@ -89,7 +89,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         <div>
             <Container fluid>
                 <Row>
-                    <Col sm={8} center>
+                    <Col md={8} center>
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>
@@ -104,7 +104,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                             </Row>
                         </Container>
                     </Col>
-                    <Col sm={4}>
+                    <Col md={4}>
                         {isLoading ? null : <Button variant="warning" size="sm"
                                             onClick={() => saveSvgAsPng(document.getElementById("ridgeline-div").children[0], "diagram.png")}>Export image</Button>}
                         <br/>
