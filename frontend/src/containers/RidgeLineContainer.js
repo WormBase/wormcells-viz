@@ -90,17 +90,23 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
             <Container fluid>
                 <Row>
                     <Col sm={8} center>
-                        <h2 className="text-center">Gene Expression Ridgeline Chart</h2>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm={8}>
-                        <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
-                        <div id="ridgeline-div" ref={ridgeLineRef}/>
+                        <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
+                            <Row>
+                                <Col>
+                                    <h2 className="text-center">Gene Expression Ridgeline Chart</h2>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
+                                    <div id="ridgeline-div" ref={ridgeLineRef}/>
+                                </Col>
+                            </Row>
+                        </Container>
                     </Col>
                     <Col sm={4}>
-                        {isLoading ? null : <Button variant="outline-primary" size="sm"
-                                            onClick={() => saveSvgAsPng(document.getElementById("ridgeline-div").children[0], "diagram.png")}>save image</Button>}
+                        {isLoading ? null : <Button variant="warning" size="sm"
+                                            onClick={() => saveSvgAsPng(document.getElementById("ridgeline-div").children[0], "diagram.png")}>Export image</Button>}
                         <br/>
                         <br/>
                         {allGenes.isLoading ?
