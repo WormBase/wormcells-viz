@@ -2,15 +2,26 @@ import React, {useEffect, useRef, useState} from "react";
 import {useQuery} from "react-query";
 import {Swarmplot} from "@wormbase/d3-charts";
 import axios from "axios";
-import {Button, Col, Container, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
+import {
+    Button,
+    Card,
+    Col,
+    Container,
+    FormCheck,
+    FormControl,
+    FormGroup,
+    FormLabel,
+    Row,
+    Spinner
+} from "react-bootstrap";
 import {saveSvgAsPng} from "save-svg-as-png";
 import {Typeahead} from "react-bootstrap-typeahead";
-import MultiSelect from "../components/multiselect/MultiSelect";
 import _ from 'lodash';
 
 const SwarmPlotContainer = () => {
     const [cell, setCell] = useState('');
-    const [genes, setGenes] = useState([]);
+    const [genes, setGenes] = useState(new Set());
+    const [filterGenes, setFilterGenes] = useState('');
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const swarmRef = useRef(null);
@@ -57,7 +68,6 @@ const SwarmPlotContainer = () => {
         const res = await axios.post(apiEndpoint, {cell: cell});
         setCell(res.data.cell);
         let dataMod = [];
-        let selectedGenesSet = new Set(genes.map(g => g.split(" (")[0]))
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, [refVal, values]]) => {
             let gene_name = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/name')
             gene_name = gene_name.data.name.data.label;
@@ -72,7 +82,7 @@ const SwarmPlotContainer = () => {
                             "<strong>" + cell_name + " expression</strong>: 10<sup>-" + (-Math.log10(rawVal)).toFixed(1) + "</sup><br/>" +
                             "<strong>" + res.data.cell + " expression</strong>: 10<sup>-" + (-Math.log10(refVal)).toFixed(1) + "</sup><br/>" +
                             "<strong>log2 fold change</strong>: " + logfc.toFixed(1) + "</div>",
-                        selected: selectedGenesSet.has(gene_name)
+                        selected: genes.has(gene_name)
                     })
             });
         }));
@@ -90,12 +100,7 @@ const SwarmPlotContainer = () => {
 
     const updateSelectedGenes = () => {
         let newData = _.cloneDeep(data);
-        let selectedGenesSet = new Set(genes.map(g => g.split(" (")[0]))
-        newData.forEach((d, index, origArray) => {
-            if (selectedGenesSet.has(d.y)) {
-                origArray[index].selected = true;
-            }
-        });
+        newData.forEach((d, index, origArray) => origArray[index].selected = genes.has(d.y));
         setData(newData);
     }
 
@@ -147,19 +152,41 @@ const SwarmPlotContainer = () => {
                             </Row>
                             <Row>
                                 <Col>
-                                    <FormLabel>Select Genes to Highlight</FormLabel>
-                                    <MultiSelect
-                                        linkWB={"https://wormbase.org/species/c_elegans/gene"}
-                                        itemsNameSingular={"gene"}
-                                        itemsNamePlural={"genes"}
-                                        items={genes}
-                                        addMultipleItemsFunction={(items) => setGenes([...genes, ...items])}
-                                        remAllItems={() => setGenes([])}
-                                        remItemFunction={(gene) => setGenes(genes.filter(g => g !== gene))}
-                                        searchType={"gene"}
-                                        sampleQuery={"e.g. dbl-1"}
-                                        listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}
-                                    />
+                                    {data !== null ?
+                                        <>
+                                            <FormLabel>Select Genes to Highlight</FormLabel>
+                                            <FormControl type="text" size="sm" placeholder="Start typing to filter"
+                                                         onChange={(event) => setFilterGenes(event.target.value)}/>
+                                            <br/>
+                                            <Card style={{height: "350px", overflowY: "scroll"}}>
+                                                <Card.Body>
+                                                    {[...new Set(data.map(d => d.y))]
+                                                        .filter(gene => filterGenes === '' || gene.startsWith(filterGenes))
+                                                        .sort().map(gene =>
+                                                            <FormCheck type="checkbox"
+                                                                       label={gene}
+                                                                       checked={genes.has(gene)}
+                                                                       onChange={(event) => {
+                                                                           if (event.target.checked) {
+                                                                               setGenes(new Set([...genes, gene]));
+                                                                           } else {
+                                                                               setGenes(new Set([...genes].filter(x => x !== gene)))
+                                                                           }
+                                                                       }}
+                                                            />)}</Card.Body></Card>
+                                            <br/>
+                                            <Container fluid>
+                                                <Row>
+                                                    <Col>
+                                                        <Button variant="outline-primary" size="sm"
+                                                                onClick={() => setGenes(new Set(data.map(d => d.y)))}>
+                                                            Select All</Button> <Button variant="outline-primary"
+                                                                                        size="sm"
+                                                                                        onClick={() => setGenes(new Set())}>Deselect All</Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </> : null}
                                 </Col>
                             </Row>
                         </Container>
