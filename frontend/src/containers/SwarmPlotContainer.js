@@ -129,7 +129,7 @@ const SwarmPlotContainer = () => {
                             <Row>
                                 <Col>
                                     {isLoading ? null :
-                                    <Button variant="warning" size="sm"
+                                    <Button variant="secondary" size="sm"
                                             onClick={() => saveSvgAsPng(document.getElementById("swarmplot-div").children[0], "diagram.png")}>Export image</Button>}
                                 </Col>
                             </Row>

@@ -105,7 +105,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                         </Container>
                     </Col>
                     <Col md={4}>
-                        {isLoading ? null : <Button variant="warning" size="sm"
+                        {isLoading ? null : <Button variant="secondary" size="sm"
                                             onClick={() => saveSvgAsPng(document.getElementById("ridgeline-div").children[0], "diagram.png")}>Export image</Button>}
                         <br/>
                         <br/>
