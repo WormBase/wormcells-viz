@@ -29,7 +29,11 @@ const SwarmPlotContainer = () => {
     const [swarmplotSize, setSwarmplotSize] = useState({top: 50, right: 25, bottom: 30, left: 120, width: 1200,
         height: 650});
 
-    const allCells = useQuery('allCells', () => axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_CELLS));
+    const allCells = useQuery('allCells', async () => {
+        let data = await axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_CELLS);
+        data = data.data.sort();
+        return data;
+    });
 
     useEffect(() => {
         fetchData(cell);
@@ -141,7 +145,7 @@ const SwarmPlotContainer = () => {
                                     <FormGroup controlId="formBasicEmail">
                                         <FormLabel>Select Cell</FormLabel>
                                         <Typeahead
-                                            options={[...allCells.data.data]}
+                                            options={[...allCells.data]}
                                             onChange={(selected) => {
                                                 if (selected !== undefined && selected.length > 0) {
                                                     setCell(selected[0]);
