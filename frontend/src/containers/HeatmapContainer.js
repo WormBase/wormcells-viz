@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useRef} from "react";
 import { Heatmap, Dotplot } from "@wormbase/d3-charts";
+
 import axios from 'axios';
 import * as d3 from 'd3';
-import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {saveSvgAsPng} from 'save-svg-as-png'
 import {
     Col,
@@ -26,7 +26,7 @@ const HeatmapContainer = () => {
     const [dotplot, setDotplot] = useState(false);
     const [coloredDots, setColoredDots] = useState(true);
     const heatMapRef = useRef(null);
-    const [heatMapSize, setHeatMapSize] = useState({top: 0, right: 15, bottom: 80, left: 140, width: 600,
+    const [heatMapSize, setHeatMapSize] = useState({top: 0, right: 15, bottom: 60, left: 140, width: 600,
         height: 650})
     const [relativeFreqs, setRelativeFreqs] = useState(true);
     const [maxExprFreq, setMaxExprFreq] = useState(0);
@@ -118,12 +118,14 @@ const HeatmapContainer = () => {
         let minValue = 0;
         let maxValue = 0.1;
         if (relativeFreqs) {
-            minValue = 0;
-            maxValue = 1;
+            minValue = minExprFreq;
+            maxValue = maxExprFreq;
             dataMod = _.cloneDeep(data);
             dataMod.forEach((d, i) => {
-                dataMod[i].value = (d.value - minExprFreq) / (maxExprFreq - minExprFreq)
+                dataMod[i].value = (d.value - minExprFreq) / (maxExprFreq - minExprFreq) + 0.000000001
             });
+            minValue = 0;
+            maxValue = 1;
         }
         if (dotplot) {
             let circleSizeMultiplier = 30;
@@ -137,18 +139,22 @@ const HeatmapContainer = () => {
                 heatMapSize.left, heatMapSize.width, heatMapSize.height, minValue, maxValue, 24, 12);
         }
         d3Chart.draw(dataMod);
-        let legendDomain = [minExprFreq, maxExprFreq];
-        if (!relativeFreqs) {
-            legendDomain = [0, 1]
+
+        let legendDomain = [minValue, maxValue];
+        if (relativeFreqs) {
+            legendDomain = [minExprFreq, maxExprFreq];
         }
-        let myColor = d3.scaleSequential()
-            .interpolator(d3ScaleChromatic.interpolateViridis)
+        let myScale = d3.scaleLinear()
             .domain(legendDomain);
+
+        let myColor = d3.scaleSequential(
+            (d) => d3.interpolateViridis(myScale(d))
+        )
 
         if (!coloredDots && dotplot) {
             clearLegend("#legend");
         } else {
-            drawHeatmapLegend("#legend", myColor, minValue, maxValue, 50, heatMapSize.width, 0, heatMapSize.right, 20, heatMapSize.left)
+            drawHeatmapLegend("#legend", myColor, legendDomain[0], legendDomain[1], 50, heatMapSize.width, 0, heatMapSize.right, 20, heatMapSize.left)
         }
         setIsLoading(false);
     }
@@ -161,19 +167,17 @@ const HeatmapContainer = () => {
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>
-                                    <h2 className="text-center">Gene Expression {dotplot ? "Dotplot": "Heatmap"} </h2>
+                                    <h3 className="text-center">Gene Expression {dotplot ? "Dotplot": "Heatmap"} </h3>
                                 </Col>
                             </Row>
                             <Row>
                                 <Col>
                                     <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
                                     <div id="heatmap-div" ref={heatMapRef}/>
+                                    {!dotplot || coloredDots ?
+                                        <span style={{marginLeft: heatMapSize.left}}>Expression Frequency</span>
+                                        : null}
                                     <div id="legend"/>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-
                                 </Col>
                             </Row>
                         </Container>

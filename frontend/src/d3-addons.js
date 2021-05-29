@@ -28,7 +28,7 @@ export function drawHeatmapLegend(selector_id, colorscale, minValue, maxValue, h
 
     var legendscale = d3.scaleLinear()
         .range([1, width - margin.left - margin.right])
-        .domain(colorscale.domain());
+        .domain([minValue, maxValue]);
 
     // image data hackery based on http://bl.ocks.org/mbostock/048d21cf747371b11884f75ad896e5a5
     var image = ctx.createImageData(width, 1);
@@ -49,7 +49,7 @@ export function drawHeatmapLegend(selector_id, colorscale, minValue, maxValue, h
     var legendaxis = d3.axisBottom()
         .scale(legendscale)
         .tickSize(6)
-        .ticks(11)
+        .ticks(5)
         .tickFormat(d3.format(".1e"));
 
     var svg = d3.select(selector_id)
