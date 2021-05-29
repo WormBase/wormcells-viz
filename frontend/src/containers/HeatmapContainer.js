@@ -34,7 +34,11 @@ const HeatmapContainer = () => {
     const [showAllCells, setShowAllCells] = useState(true);
     const [filterCells, setFilterCells] = useState('');
 
-    const allCells = useQuery('allCells', () => axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_CELLS));
+    const allCells = useQuery('allCells', async () => {
+        let data = await axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_CELLS);
+        data = data.data.sort();
+        return data;
+    });
 
     useEffect(() => {
         fetchData();
@@ -262,7 +266,7 @@ const HeatmapContainer = () => {
                                                     <br/>
                                                 <Card style={{height: "350px", overflowY: "scroll"}}>
                                                     <Card.Body>
-                                                    {allCells.data.data.filter(cell => showAllCells || cells.has(cell))
+                                                    {allCells.data.filter(cell => showAllCells || cells.has(cell))
                                                         .filter(cell => filterCells === '' || cell.startsWith(filterCells))
                                                         .sort().map(cell =>
                                                     <FormCheck type="checkbox"
@@ -288,7 +292,7 @@ const HeatmapContainer = () => {
                                                             </Col>
                                                             <Col>
                                                                 <Button variant="outline-primary" size="sm"
-                                                                        onClick={() => setCells(new Set(allCells.data.data))}>
+                                                                        onClick={() => setCells(new Set(allCells.data))}>
                                                                     Select All</Button> <Button variant="outline-primary"
                                                                                                 size="sm"
                                                                                                 onClick={() => setCells(new Set())}>Deselect All</Button>
