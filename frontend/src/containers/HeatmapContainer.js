@@ -92,7 +92,7 @@ const HeatmapContainer = () => {
             Object.entries(values).forEach(([cell_name, value]) => {
                 threeColsData.push({
                     group: gene_name.data.name.data.label,
-                    variable: cell_name.replaceAll('_', ' ').trim(), value: value,
+                    variable: cell_name.replaceAll('_', ' ').trim(), value: 10**value,
                     tooltip_html: "<div id='currentTooltip'/><button class='btn-secondary small' style='float: right;' " +
                         "onclick='(function(){getElementById(\"currentTooltip\").parentElement.style.opacity = \"0\"; " +
                         "getElementById(\"currentTooltip\").parentElement.innerHTML = \"\";})();'>X</button>" +
@@ -100,7 +100,7 @@ const HeatmapContainer = () => {
                         "' target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data.name.data.label +
                         "<br/>Gene description: " + desc.data.concise_description.data.text +
                         "<br/><a href='ridge_line/" + gene_id + "'>View ridgeline plot for this gene</a><br/>Cell Name: " +
-                        cell_name + "<br/>" + "Expression Frequency: 10<sup>-" + (-Math.log10(value)).toFixed(1) + "</sup>"
+                        cell_name + "<br/>" + "Expression Frequency: 10<sup>" + value.toFixed(1) + "</sup>"
                 });
                 newCells.add(cell_name);
             })

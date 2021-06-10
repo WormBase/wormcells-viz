@@ -5,6 +5,7 @@ import { Ridgeline } from "@wormbase/d3-charts";
 import AsyncTypeahead from "react-bootstrap-typeahead/lib/components/AsyncTypeahead";
 import {useQuery} from "react-query";
 import {saveSvgAsPng} from "save-svg-as-png";
+import {Histograms} from "../d3-addons";
 
 
 const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
@@ -56,31 +57,37 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_RIDGELINE;
         const res = await axios.post(apiEndpoint, {gene_id: gene_id});
         setGene(res.data.gene_id);
-        let data = {}
+        let data = []
+        let maxY = Math.max(...Object.values(res.data.response).map(v => Math.max(...v)));
+        let color = 1;
         for (const [key, value] of Object.entries(res.data.response)) {
             let cellName = key.replaceAll('_', ' ').trim();
-            data[cellName] = value.map(e => -Math.log10(e));
+            value.forEach((v, i) => data.push({c: cellName, x: i, y: v/maxY, color: color}));
+            color++;
         }
-        data = Object.keys(data).sort().reduce(
-            (obj, key) => {
-                obj[key] = data[key];
-                return obj;
-            }, {}
-        );
+
+        // data = Object.keys(data).sort().reduce(
+        //     (obj, key) => {
+        //         obj[key] = data[key];
+        //         return obj;
+        //     }, {}
+        // );
+
+
         let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/concise_description')
         let geneName = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/name')
         setGeneName(geneName.data.name.data.label);
         setGeneID(res.data.gene_id);
         setGeneDescription(desc.data.concise_description.data.text);
         setData(data);
-        setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 50 * Object.keys(data).length}))
+        setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 50 * Object.keys(res.data.response).length + ridgeLineSize.top + ridgeLineSize.bottom}))
         setIsLoading(false);
     }
 
     const drawRidgeLine = async () => {
         setIsLoading(true);
-        const d3RidgeLine = new Ridgeline('#ridgeline-div', ridgeLineSize.top, ridgeLineSize.right, ridgeLineSize.bottom,
-            ridgeLineSize.left, ridgeLineSize.width, ridgeLineSize.height, [1e-10,1e1], [0, 200], 0.5, 20);
+        const d3RidgeLine = new Histograms('#ridgeline-div', ridgeLineSize.top, ridgeLineSize.right, ridgeLineSize.bottom,
+            ridgeLineSize.left, ridgeLineSize.width, ridgeLineSize.height, [0,100], [0, 200], 20);
         d3RidgeLine.draw(data);
         setIsLoading(false);
     }

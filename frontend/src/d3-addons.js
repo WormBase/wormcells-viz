@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import * as d3ScaleChromatic from 'd3-scale-chromatic';
 
 export function clearLegend(selector_id) {
     d3.select(selector_id).html("");
@@ -65,4 +66,131 @@ export function drawHeatmapLegend(selector_id, colorscale, minValue, maxValue, h
         .attr("class", "axis")
         .attr("transform", "translate(" + (margin.left) + "," + (height - margin.bottom) + ")")
         .call(legendaxis);
+}
+
+export function wrap(text, width) {
+    text.each(function() {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1, // ems
+            y = text.attr("y"),
+            dy = parseFloat(text.attr("dy")),
+            tspan = text.text(null).append("tspan").attr("x", -3).attr("y", y).attr("dy", dy + "em");
+        while (word = words.pop()) {
+            if (word !== '') {
+                line.push(word);
+                tspan.text(line.join(" "));
+                if (line.length > 1 && line.map(word => word.length).reduce((a, i) => a + i, 0) > width) {
+                    line.pop();
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = text.append("tspan").attr("x", -3).attr("y", y).attr("dy", lineHeight + dy + "em").text(word);
+                }
+            }
+        }
+    });
+}
+
+export class Histograms {
+    constructor(divId = "#histograms", top = 60, right = 30, bottom = 20,
+                left = 110, width, height, xdomain = [-10, 100], ydomain = [0, 1],
+                maxLabelLength = 1000) {
+        this.divId = divId;
+        if (!this.divId.startsWith("#")) {
+            this.divId = "#" + this.divId;
+        }
+        this.margin = {top: top, right: right, bottom: bottom, left: left};
+        this.height = height - this.margin.top - this.margin.bottom;
+        this.width = width - this.margin.left - this.margin.right;
+        this.xdomain = xdomain;
+        this.ydomain = ydomain;
+        this.maxLabelLength = maxLabelLength;
+        d3.select(this.divId).html("");
+        // Get the different categories and count them
+
+
+        // append the svg object to the body of the page
+        this.svg = d3.select(this.divId)
+            .append("svg")
+            .attr("width", width + this.margin.left + this.margin.right)
+            .attr("height", height + this.margin.top + this.margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + this.margin.left + "," + this.margin.top + ")");
+    }
+
+    draw(data) {
+
+        var width = this.width;
+        var height = this.height;
+        var svg = this.svg;
+        var xdomain = this.xdomain;
+        var ydomain = this.ydomain;
+        var maxLabelLength = this.maxLabelLength;
+        var margin = this.margin;
+
+        var categories = [...new Set(data.map(d => d.c))];
+        var n = categories.length
+
+        // Add X axis
+        var x = d3.scaleLinear()
+            .domain(xdomain)
+            .range([ 0, width ]);
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        svg.append("g")
+            .attr("transform", "translate(0,-"+ margin.top +")")
+            .call(d3.axisBottom(x));
+
+        // Create a Y scale for densities
+        var y = d3.scaleLinear()
+            .domain(ydomain)
+            .range([ height, 0]);
+
+        // Create the Y axis for names
+        var yName = d3.scaleBand()
+            .domain(categories)
+            .range([0, height])
+            .paddingInner(1)
+        svg.append("g")
+            .call(d3.axisLeft(yName).tickSize(-width))
+            .selectAll(".tick text")
+            .call(wrap, maxLabelLength);
+
+        // // set the parameters for the histogram
+        // var histogram = d3.histogram()
+        //     .value(function (d) {
+        //         return d.price;
+        //     })   // I need to give the vector of value
+        //     .domain([0, 1000])  // then the domain of the graphic
+        //     .thresholds(100); // then the numbers of bins
+        //
+        // // And apply this function to data to get the bins
+        // var bins = histogram(data);
+
+        // append the bar rectangles to the this.svg element
+        var lineHeight = (height) / n
+        svg.selectAll("rect")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("x", 1)
+            .attr("transform", function (d) {
+                return "translate(" + x(d.x) + "," + (yName(d.c)  - d.y * lineHeight) + ")";
+            })
+            .attr("width", function (d) {
+                return width / (xdomain[1] - xdomain[0]);
+            })
+            .attr("height", function (d) {
+                return d.y * lineHeight;
+            })
+            .attr("fill", function(d){
+                return d3ScaleChromatic.interpolateSinebow(d.color/n)})
+
+    }
 }

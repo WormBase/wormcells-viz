@@ -83,8 +83,8 @@ const SwarmPlotContainer = () => {
                         tooltip_html:
                             "<div><strong>Cell type</strong>: " + cell_name + "<br/>" +
                             "<strong>Gene</strong>: " + gene_name + "<br/>" +
-                            "<strong>" + cell_name + " expression</strong>: 10<sup>-" + (-Math.log10(rawVal)).toFixed(1) + "</sup><br/>" +
-                            "<strong>" + res.data.cell + " expression</strong>: 10<sup>-" + (-Math.log10(refVal)).toFixed(1) + "</sup><br/>" +
+                            "<strong>" + cell_name + " expression</strong>: 10<sup>" + (-Math.log10(rawVal)).toFixed(1) + "</sup><br/>" +
+                            "<strong>" + res.data.cell + " expression</strong>: 10<sup>" + refVal.toFixed(1) + "</sup><br/>" +
                             "<strong>log2 fold change</strong>: " + logfc.toFixed(1) + "</div>",
                         selected: genes.has(gene_name)
                     })
