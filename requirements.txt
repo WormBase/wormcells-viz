@@ -2,3 +2,4 @@ falcon~=2.0.0
 pandas~=1.2.3
 tables~=3.6.1
 anndata~=0.7.6
+numpy~=1.20.1

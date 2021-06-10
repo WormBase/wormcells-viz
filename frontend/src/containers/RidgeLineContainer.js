@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Button, Col, Container, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
 import axios from "axios";
-import { Ridgeline } from "@wormbase/d3-charts";
 import AsyncTypeahead from "react-bootstrap-typeahead/lib/components/AsyncTypeahead";
 import {useQuery} from "react-query";
 import {saveSvgAsPng} from "save-svg-as-png";
@@ -18,7 +17,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [typeheadOptions, setTypeheadOptions] = useState([]);
     const ridgeLineRef = useRef(null);
-    const [ridgeLineSize, setRidgeLineSize] = useState({top: 50, right: 25, bottom: 30, left: 120, width: 1200,
+    const [ridgeLineSize, setRidgeLineSize] = useState({top: 100, right: 25, bottom: 30, left: 120, width: 1200,
         height: 650});
 
     const allGenes = useQuery('allGenes', async () => {
@@ -58,10 +57,10 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         const res = await axios.post(apiEndpoint, {gene_id: gene_id});
         setGene(res.data.gene_id);
         let data = []
-        let maxY = Math.max(...Object.values(res.data.response).map(v => Math.max(...v)));
         let color = 1;
         for (const [key, value] of Object.entries(res.data.response)) {
             let cellName = key.replaceAll('_', ' ').trim();
+            let maxY = Math.max(...value);
             value.forEach((v, i) => data.push({c: cellName, x: i, y: v/maxY, color: color}));
             color++;
         }
@@ -100,7 +99,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>
-                                    <h2 className="text-center">Gene Expression Ridgeline Chart</h2>
+                                    <h2 className="text-center">Gene Expression Histograms</h2>
                                 </Col>
                             </Row>
                             <Row>

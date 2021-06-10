@@ -141,11 +141,15 @@ export class Histograms {
             .range([ 0, width ]);
         svg.append("g")
             .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x));
+            .call(d3.axisBottom(x)
+            .ticks(20)
+            .tickFormat(t => "10^" + (-10 + 0.1 * t) ));
 
         svg.append("g")
-            .attr("transform", "translate(0,-"+ margin.top +")")
-            .call(d3.axisBottom(x));
+            .attr("transform", "translate(0,-"+ (margin.top - 20) +")")
+            .call(d3.axisTop(x)
+            .ticks(20)
+            .tickFormat(t => "10^" + (-10 + 0.1 * t) ));
 
         // Create a Y scale for densities
         var y = d3.scaleLinear()
@@ -184,13 +188,15 @@ export class Histograms {
                 return "translate(" + x(d.x) + "," + (yName(d.c)  - d.y * lineHeight) + ")";
             })
             .attr("width", function (d) {
-                return width / (xdomain[1] - xdomain[0]);
+                return width / (xdomain[1] - xdomain[0]) - 2;
             })
             .attr("height", function (d) {
                 return d.y * lineHeight;
             })
             .attr("fill", function(d){
                 return d3ScaleChromatic.interpolateSinebow(d.color/n)})
+            .style("stroke", "gray")
+            .style("stroke-width", 1)
 
     }
 }

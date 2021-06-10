@@ -12,6 +12,7 @@ import falcon
 
 from wsgiref import simple_server
 from falcon import HTTPStatus
+import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -50,15 +51,12 @@ class FileStorageEngine(object):
 
     def get_data_histogram(self, gene_id: str = None):
         gene_id = gene_id if gene_id else self.get_all_genes()[0]
-        cell_names = self.get_all_cells()
-        cell_names_loc = {cell_name: self.histogram.obs_names.get_loc(cell_name) for cell_name in cell_names}
-        return {cell_name: self.histogram.layers[gene_id][cell_names_loc[cell_name]].tolist() for cell_name in
-                cell_names}, gene_id
+        return {cell_name: self.histogram.layers[gene_id][idx].tolist() for
+                idx, cell_name in enumerate(self.histogram.obs.index)}, gene_id
 
     def get_data_swarmplot(self, cell: str = None, sort_by: str = 'p_value'):
         cell = cell if cell else self.get_all_cells()[0]
-        cell = cell.strip()
-        cell_names = [cell_name.strip() for cell_name in self.get_all_cells()]
+        cell_names = self.get_all_cells()
         if sort_by == 'p_value':
             best_genes = list(self.swarmplot.uns[cell].proba_not_de.sort_values()[0:50].index.values)
         else:
@@ -68,7 +66,7 @@ class FileStorageEngine(object):
         results = {}
         for gene_id in best_genes:
             ref_val = float(self.swarmplot.uns['heatmap'][cell][gene_id])
-            results[gene_id] = (ref_val, [(cell_name, float(self.swarmplot.uns[cell_name].lfc_mean[gene_id]),
+            results[gene_id] = (ref_val, [(cell_name, float(self.swarmplot.uns['heatmap'][cell_name][gene_id]),
                                            float(self.swarmplot.layers[cell_name][cell_names_loc[cell]][best_genes_loc[gene_id]]))
                                           for cell_name in cell_names if
                                           float(self.swarmplot.uns[cell_name].lfc_mean[gene_id]) > 0])
@@ -128,10 +126,7 @@ class SwarmplotReader:
     def on_post(self, req, resp):
         if req.media:
             cell = req.media.get("cell")
-            try:
-                cell_name, results = self.storage.get_data_swarmplot(cell=cell)
-            except KeyError:
-                cell_name, results = 'None', []
+            cell_name, results = self.storage.get_data_swarmplot(cell=cell)
             resp.body = f'{{"response": {json.dumps(results)}, "cell": "{cell_name}"}}'
             resp.status = falcon.HTTP_OK
         else:
