@@ -6,6 +6,7 @@ import {useQuery} from "react-query";
 import {saveSvgAsPng} from "save-svg-as-png";
 import {Histograms} from "../d3-charts";
 import _ from 'lodash';
+import {resetFirstInputPolyfill} from "web-vitals/dist/modules/lib/polyfills/firstInputPolyfill";
 
 
 const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
@@ -59,7 +60,9 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         setGene(res.data.gene_id);
         let data = []
         let color = 1;
-        for (const [key, value] of Object.entries(res.data.response)) {
+        let sortedCells = [...Object.keys(res.data.response)].sort();
+        sortedCells.forEach(key => {
+            let value = res.data.response[key];
             let cellName = key.replaceAll('_', ' ').trim();
             let maxY = Math.max(...value);
             let cellsCount = _.sum([...value]);
@@ -73,7 +76,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                     "<strong>Expression frequency:</strong> 10<sup>" + ((i - 100) / 10).toFixed(1) + "</sup>"
             }));
             color++;
-        }
+        });
 
         // data = Object.keys(data).sort().reduce(
         //     (obj, key) => {

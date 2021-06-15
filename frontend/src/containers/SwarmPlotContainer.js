@@ -94,7 +94,6 @@ const SwarmPlotContainer = () => {
                     })
             });
         }));
-        dataMod = dataMod.sort((a, b) => a.y > b.y ? 1 : -1);
         setData(dataMod);
         setIsLoading(false);
     }
