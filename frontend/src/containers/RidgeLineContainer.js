@@ -159,8 +159,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                             <br/>
                             <br/>
                             <br/>
-                            <small>The colors of the histograms are used to make it easier to identify the different plots,
-                                but they do not convey information.</small>
+                            <small>*Note that colors are used to make it easier to identify the different plots but they do not convey any information.</small>
                         </div>
                     </Col>
                 </Row>
