@@ -179,6 +179,38 @@ export class Histograms {
 
         // append the bar rectangles to the this.svg element
         var lineHeight = (height) / n
+
+        var tooltip = d3.select(this.divId)
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px")
+
+        var mouseover = function (d) {
+            d3.select(this)
+                .style("stroke", "#02a169")
+                .style("stroke-width", 2)
+                .style("opacity", 1)
+            tooltip
+                .html(d.tooltip_html)
+                .style("position", "absolute")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 100) + "px")
+                .style("opacity", 1)
+        }
+        var mouseleave = function (d) {
+            d3.select(this)
+                .style("stroke", "gray")
+                .style("stroke-width", 1)
+            tooltip
+                .html("")
+                .style("opacity", 0)
+        }
+
         svg.selectAll("rect")
             .data(data)
             .enter()
@@ -197,6 +229,8 @@ export class Histograms {
                 return d3ScaleChromatic.interpolateSinebow(d.color/n)})
             .style("stroke", "gray")
             .style("stroke-width", 1)
+            .on("mouseover", mouseover)
+            .on("mouseleave", mouseleave)
 
     }
 }

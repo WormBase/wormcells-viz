@@ -5,6 +5,7 @@ import AsyncTypeahead from "react-bootstrap-typeahead/lib/components/AsyncTypeah
 import {useQuery} from "react-query";
 import {saveSvgAsPng} from "save-svg-as-png";
 import {Histograms} from "../d3-addons";
+import _ from 'lodash';
 
 
 const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
@@ -61,7 +62,16 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         for (const [key, value] of Object.entries(res.data.response)) {
             let cellName = key.replaceAll('_', ' ').trim();
             let maxY = Math.max(...value);
-            value.forEach((v, i) => data.push({c: cellName, x: i, y: v/maxY, color: color}));
+            let cellsCount = _.sum([...value]);
+            value.forEach((v, i) => data.push({
+                c: cellName + " (" + cellsCount + ")",
+                x: i,
+                y: v/maxY,
+                color: color,
+                tooltip_html: "<strong>Number of cells in this bin:</strong> " + v + "<br/>" +
+                    "<strong>Total number of cells:</strong> " + cellsCount + "<br/>" +
+                    "<strong>Expression frequency:</strong> 10<sup>" + ((i - 100) / 10).toFixed(1) + "</sup>"
+            }));
             color++;
         }
 
