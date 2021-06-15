@@ -146,6 +146,11 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                             <strong>Gene ID:</strong> <a href={'https://wormbase.org/species/c_elegans/gene/' + gene} target='_blank'>{geneID}</a><br/>
                             <strong>Gene Name:</strong> {geneName} <br/>
                             <strong>Gene Description:</strong> {geneDescription}
+                            <br/>
+                            <br/>
+                            <br/>
+                            <small>The colors of the histograms are used to make it easier to identify the different plots,
+                                but they do not convey information.</small>
                         </div>
                     </Col>
                 </Row>
