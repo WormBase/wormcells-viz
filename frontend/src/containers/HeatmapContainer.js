@@ -15,7 +15,7 @@ import {
 import _ from 'lodash';
 import MultiSelect from "../components/multiselect/MultiSelect";
 import {useQuery} from "react-query";
-import {clearLegend, drawHeatmapLegend} from "../d3-addons";
+import {clearLegend, drawHeatmapLegend} from "../d3-charts";
 
 const HeatmapContainer = () => {
 
@@ -178,7 +178,7 @@ const HeatmapContainer = () => {
                                 <Col>
                                     <p className="text-center">{isLoading === true ? <Spinner animation="grow" /> : ''}</p>
                                     <div id="heatmap-div" ref={heatMapRef}/>
-                                    {!dotplot || coloredDots ?
+                                    {!isLoading && (!dotplot || coloredDots) ?
                                         <span style={{marginLeft: heatMapSize.left}}>Expression Frequency</span>
                                         : null}
                                     <div id="legend"/>

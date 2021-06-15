@@ -4,7 +4,7 @@ import axios from "axios";
 import AsyncTypeahead from "react-bootstrap-typeahead/lib/components/AsyncTypeahead";
 import {useQuery} from "react-query";
 import {saveSvgAsPng} from "save-svg-as-png";
-import {Histograms} from "../d3-addons";
+import {Histograms} from "../d3-charts";
 import _ from 'lodash';
 
 

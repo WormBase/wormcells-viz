@@ -138,23 +138,23 @@ export class Histograms {
         // Add X axis
         var x = d3.scaleLinear()
             .domain(xdomain)
-            .range([ 0, width ]);
+            .range([0, width]);
         svg.append("g")
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x)
-            .ticks(10)
-            .tickFormat(t => "1e" + (-10 + 0.1 * t) ));
+                .ticks(10)
+                .tickFormat(t => "1e" + (-10 + 0.1 * t)));
 
         svg.append("g")
-            .attr("transform", "translate(0,-"+ (margin.top - 20) +")")
+            .attr("transform", "translate(0,-" + (margin.top - 20) + ")")
             .call(d3.axisTop(x)
-            .ticks(10)
-            .tickFormat(t => "1e" + (-10 + 0.1 * t) ));
+                .ticks(10)
+                .tickFormat(t => "1e" + (-10 + 0.1 * t)));
 
         // Create a Y scale for densities
         var y = d3.scaleLinear()
             .domain(ydomain)
-            .range([ height, 0]);
+            .range([height, 0]);
 
         // Create the Y axis for names
         var yName = d3.scaleBand()
@@ -217,7 +217,7 @@ export class Histograms {
             .append("rect")
             .attr("x", 1)
             .attr("transform", function (d) {
-                return "translate(" + x(d.x) + "," + (yName(d.c)  - d.y * lineHeight) + ")";
+                return "translate(" + x(d.x) + "," + (yName(d.c) - d.y * lineHeight) + ")";
             })
             .attr("width", function (d) {
                 return width / (xdomain[1] - xdomain[0]) - 2;
@@ -225,12 +225,14 @@ export class Histograms {
             .attr("height", function (d) {
                 return d.y * lineHeight;
             })
-            .attr("fill", function(d){
-                return d3ScaleChromatic.interpolateSinebow(d.color/n)})
+            .attr("fill", function (d) {
+                return d3ScaleChromatic.interpolateSinebow(d.color / n)
+            })
             .style("stroke", "gray")
             .style("stroke-width", 1)
             .on("mouseover", mouseover)
             .on("mouseleave", mouseleave)
 
     }
+
 }

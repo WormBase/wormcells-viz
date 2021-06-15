@@ -24,6 +24,7 @@ const SwarmPlotContainer = () => {
     const [tempNumGenes, setTempNumGenes] = useState(50);
     const [numGenes, setNumGenes] = useState(50);
     const [sortBy, setSortBy] = useState('p_value');
+    const [sortAscending, setSortAscending] = useState("true");
     const [filterGenes, setFilterGenes] = useState('');
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +41,7 @@ const SwarmPlotContainer = () => {
 
     useEffect(() => {
         fetchData(cell);
-    }, [cell, numGenes, sortBy]);
+    }, [cell, numGenes, sortBy, sortAscending]);
 
     useEffect(() => {
         if (data !== null) {
@@ -72,7 +73,7 @@ const SwarmPlotContainer = () => {
     const fetchData = async (cell) => {
         setIsLoading(true);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_SWARMPLOT;
-        const res = await axios.post(apiEndpoint, {cell: cell, max_num_genes: numGenes, sort_by: sortBy});
+        const res = await axios.post(apiEndpoint, {cell: cell, max_num_genes: numGenes, sort_by: sortBy, ascending: sortAscending});
         setCell(res.data.cell);
         let dataMod = [];
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, [refVal, values]]) => {
@@ -101,7 +102,7 @@ const SwarmPlotContainer = () => {
     const drawSwarmplot = async () => {
         setIsLoading(true);
         const d3Swarmplot = new Swarmplot('#swarmplot-div', swarmplotSize.top, swarmplotSize.right, swarmplotSize.bottom,
-            swarmplotSize.left, swarmplotSize.width, swarmplotSize.height, 20);
+            swarmplotSize.left, swarmplotSize.width, swarmplotSize.height, 20, [-10,10]);
         d3Swarmplot.draw(data);
         setIsLoading(false);
     }
@@ -214,7 +215,17 @@ const SwarmPlotContainer = () => {
                                                         </FormControl>
                                                     </Col>
                                                     <Col>
-                                                        <FormLabel>Max number of genes</FormLabel>
+                                                        <FormLabel>&nbsp;</FormLabel><br/>
+                                                        <FormControl as="select"
+                                                                     onChange={(event) => setSortAscending(event.target.value)}
+                                                                     value={sortAscending}
+                                                        >
+                                                            <option value="true">Ascending</option>
+                                                            <option value="false">Descending</option>
+                                                        </FormControl>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormLabel>Max # of genes</FormLabel>
                                                         <FormControl onChange={(event) => setTempNumGenes(event.target.value)}
                                                                      value={tempNumGenes}/>
                                                     </Col>

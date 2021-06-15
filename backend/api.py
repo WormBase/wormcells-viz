@@ -54,18 +54,19 @@ class FileStorageEngine(object):
         return {cell_name: self.histogram.layers[gene_id][idx].tolist() for
                 idx, cell_name in enumerate(self.histogram.obs.index)}, gene_id
 
-    def get_data_swarmplot(self, cell: str = None, sort_by: str = 'p_value', max_num_genes: int = 50):
+    def get_data_swarmplot(self, cell: str = None, sort_by: str = 'p_value', ascending: bool = True,
+                           max_num_genes: int = 50):
         cell = cell if cell else self.get_all_cells()[0]
         cell_names = self.get_all_cells()
         best_genes = []
         sort_by = sort_by if sort_by else 'p_value'
         max_num_genes = max_num_genes if max_num_genes else 50
         if sort_by == 'p_value':
-            best_genes = list(self.swarmplot.uns[cell].proba_not_de.sort_values()[0:max_num_genes].index.values)
+            best_genes = list(self.swarmplot.uns[cell].proba_not_de.sort_values(ascending=ascending)[0:max_num_genes].index.values)
         elif sort_by == 'lfc':
-            best_genes = list(self.swarmplot.uns[cell].lfc_mean.sort_values()[0:max_num_genes].index.values)
+            best_genes = list(self.swarmplot.uns[cell].lfc_mean.sort_values(ascending=ascending)[0:max_num_genes].index.values)
         elif sort_by == 'expr':
-            best_genes = list(self.swarmplot.uns[cell].scale1.sort_values()[0:max_num_genes].index.values)
+            best_genes = list(self.swarmplot.uns[cell].scale1.sort_values(ascending=ascending)[0:max_num_genes].index.values)
         best_genes_loc = {gene_id: self.swarmplot.var_names.get_loc(gene_id) for gene_id in best_genes}
         cell_names_loc = {cell_name: self.swarmplot.obs_names.get_loc(cell_name) for cell_name in cell_names}
         results = {}
@@ -132,10 +133,12 @@ class SwarmplotReader:
         if req.media:
             cell = req.media.get("cell")
             max_num_genes = req.media.get("max_num_genes")
+            ascending = req.media.get("ascending")
+            ascending = ascending == "true" if ascending else True
             max_num_genes = int(max_num_genes) if max_num_genes else max_num_genes
             sort_by = req.media.get("sort_by")
             cell_name, results = self.storage.get_data_swarmplot(cell=cell, max_num_genes=max_num_genes,
-                                                                 sort_by=sort_by)
+                                                                 sort_by=sort_by, ascending=ascending)
             resp.body = f'{{"response": {json.dumps(results)}, "cell": "{cell_name}"}}'
             resp.status = falcon.HTTP_OK
         else:
