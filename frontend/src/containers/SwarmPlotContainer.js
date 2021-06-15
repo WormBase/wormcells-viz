@@ -21,6 +21,9 @@ import _ from 'lodash';
 const SwarmPlotContainer = () => {
     const [cell, setCell] = useState('');
     const [genes, setGenes] = useState(new Set());
+    const [tempNumGenes, setTempNumGenes] = useState(50);
+    const [numGenes, setNumGenes] = useState(50);
+    const [sortBy, setSortBy] = useState('p_value');
     const [filterGenes, setFilterGenes] = useState('');
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +40,7 @@ const SwarmPlotContainer = () => {
 
     useEffect(() => {
         fetchData(cell);
-    }, [cell]);
+    }, [cell, numGenes, sortBy]);
 
     useEffect(() => {
         if (data !== null) {
@@ -69,7 +72,7 @@ const SwarmPlotContainer = () => {
     const fetchData = async (cell) => {
         setIsLoading(true);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_SWARMPLOT;
-        const res = await axios.post(apiEndpoint, {cell: cell});
+        const res = await axios.post(apiEndpoint, {cell: cell, max_num_genes: numGenes, sort_by: sortBy});
         setCell(res.data.cell);
         let dataMod = [];
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, [refVal, values]]) => {
@@ -117,7 +120,7 @@ const SwarmPlotContainer = () => {
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col sm={12} center>
-                                    <h5 className="text-center">Relative Log-fold change in expression of top 25 specific genes for cell '{cell}'</h5>
+                                    <h5 className="text-center">Relative Log-fold change in expression of top {numGenes} specific genes for cell '{cell}'</h5>
                                 </Col>
                             </Row>
                             <Row>
@@ -159,35 +162,65 @@ const SwarmPlotContainer = () => {
                                 <Col>
                                     {data !== null ?
                                         <>
-                                            <FormLabel>Select Genes to Highlight</FormLabel>
-                                            <FormControl type="text" size="sm" placeholder="Start typing to filter"
-                                                         onChange={(event) => setFilterGenes(event.target.value)}/>
-                                            <br/>
-                                            <Card style={{height: "350px", overflowY: "scroll"}}>
-                                                <Card.Body>
-                                                    {[...new Set(data.map(d => d.y))]
-                                                        .filter(gene => filterGenes === '' || gene.startsWith(filterGenes))
-                                                        .sort().map(gene =>
-                                                            <FormCheck type="checkbox"
-                                                                       label={gene}
-                                                                       checked={genes.has(gene)}
-                                                                       onChange={(event) => {
-                                                                           if (event.target.checked) {
-                                                                               setGenes(new Set([...genes, gene]));
-                                                                           } else {
-                                                                               setGenes(new Set([...genes].filter(x => x !== gene)))
-                                                                           }
-                                                                       }}
-                                                            />)}</Card.Body></Card>
-                                            <br/>
-                                            <Container fluid>
-                                                <Row>
+                                            <Card>
+                                            <Card.Body>
+                                                <FormLabel>Select Genes to Highlight</FormLabel>
+                                                <FormControl type="text" size="sm" placeholder="Start typing to filter"
+                                                             onChange={(event) => setFilterGenes(event.target.value)}/>
+                                                <br/>
+                                                <Card style={{height: "250px", overflowY: "scroll"}}>
+                                                    <Card.Body>
+                                                        {[...new Set(data.map(d => d.y))]
+                                                            .filter(gene => filterGenes === '' || gene.startsWith(filterGenes))
+                                                            .sort().map(gene =>
+                                                                <FormCheck type="checkbox"
+                                                                           label={gene}
+                                                                           checked={genes.has(gene)}
+                                                                           onChange={(event) => {
+                                                                               if (event.target.checked) {
+                                                                                   setGenes(new Set([...genes, gene]));
+                                                                               } else {
+                                                                                   setGenes(new Set([...genes].filter(x => x !== gene)))
+                                                                               }
+                                                                           }}
+                                                                />)}</Card.Body></Card>
+                                                <br/>
+                                                <Container fluid>
+                                                    <Row>
                                                     <Col>
                                                         <Button variant="outline-primary" size="sm"
                                                                 onClick={() => setGenes(new Set(data.map(d => d.y)))}>
                                                             Select All</Button> <Button variant="outline-primary"
                                                                                         size="sm"
                                                                                         onClick={() => setGenes(new Set())}>Deselect All</Button>
+                                                    </Col>
+                                                </Row>
+                                                </Container>
+                                            </Card.Body>
+                                            </Card>
+
+                                            <br/>
+                                            <Container fluid>
+                                                <Row>
+                                                    <Col>
+                                                        <FormLabel>Sort by</FormLabel>
+                                                        <FormControl as="select"
+                                                                     onChange={(event) => setSortBy(event.target.value)}
+                                                                     value={sortBy}
+                                                        >
+                                                            <option value="p_value">p-value</option>
+                                                            <option value="lfc">log-fold change</option>
+                                                            <option value="expr">expression value</option>
+                                                        </FormControl>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormLabel>Max number of genes</FormLabel>
+                                                        <FormControl onChange={(event) => setTempNumGenes(event.target.value)}
+                                                                     value={tempNumGenes}/>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormLabel>&nbsp;</FormLabel><br/>
+                                                        <Button variant="outline-primary" onClick={() => setNumGenes(tempNumGenes)}>Update</Button>
                                                     </Col>
                                                 </Row>
                                             </Container>
