@@ -142,14 +142,14 @@ export class Histograms {
         svg.append("g")
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x)
-            .ticks(20)
-            .tickFormat(t => "10^" + (-10 + 0.1 * t) ));
+            .ticks(10)
+            .tickFormat(t => "1e" + (-10 + 0.1 * t) ));
 
         svg.append("g")
             .attr("transform", "translate(0,-"+ (margin.top - 20) +")")
             .call(d3.axisTop(x)
-            .ticks(20)
-            .tickFormat(t => "10^" + (-10 + 0.1 * t) ));
+            .ticks(10)
+            .tickFormat(t => "1e" + (-10 + 0.1 * t) ));
 
         // Create a Y scale for densities
         var y = d3.scaleLinear()
