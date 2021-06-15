@@ -22,18 +22,22 @@
    
         Run with the Falcon built-in server for development:
    
-        $ nohup python3 backend/api.py -m /path/to/mean_matrix.csv -f /path/to/full_matrix.HDF5.float16 -p 32323 &
+        $ nohup python3 backend/api.py -e /path/to/heatmap_data.h5ad -i /path/to/histogram_data.h5ad -s /path/to/swarmplot_data.h5ad -p 32323 &
    
         Or run with gunicorn for production (install it via pip if necessary):
 
-        $ export MEAN_MATRIX_FILE_PATH=/path/to/mean_matrix.csv; export FULL_MATRIX_FILE_PATH=/path/to/full_matrix.HDF5.float16; nohup gunicorn -b 0.0.0.0:32323 backend.api:app &>/path/to/api.log &
+        $ export HEATMAP_FILE_PATH=/path/to/heatmap_data; export HISTOGRAM_FILE_PATH=/path/to/histogram_data; export SWARMPLOT_FILE_PATH=/path/to/swarmplot_data; nohup gunicorn -b 0.0.0.0:32323 backend.api:app &>/path/to/api.log &
 
         Where 32323 is the port used by the API
 
 3. Modify the frontend/.env file to point to the running api hostname and port:
 
-        > REACT_APP_API_ENDPOINT_READ_DATA_HEATMAP=http://yourhostname:32323/get_data_matrix
-        > REACT_APP_API_ENDPOINT_READ_DATA_RIDGELINE=http://yourhostname:32323/get_data_gene
+        > REACT_APP_API_ENDPOINT_READ_DATA_HEATMAP=<api_hostname>:<api_port>/get_data_heatmap
+        > REACT_APP_API_ENDPOINT_READ_DATA_RIDGELINE=<api_hostname>:<api_port>/get_data_histogram
+        > REACT_APP_API_ENDPOINT_READ_DATA_SWARMPLOT=<api_hostname>:<api_port>/get_data_swarmplot
+        > REACT_APP_API_ENDPOINT_READ_ALL_GENES=<api_hostname>:<api_port>/get_all_genes
+        > REACT_APP_API_ENDPOINT_READ_ALL_CELLS=<api_hostname>:<api_port>/get_all_cells
+        > REACT_APP_API_AUTOCOMPLETE_ENDPOINT=https://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR
 
 4. Install the frontend requirements:
 
