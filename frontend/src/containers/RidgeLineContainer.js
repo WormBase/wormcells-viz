@@ -162,7 +162,12 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                             <br/>
                             <br/>
                             <br/>
-                            <small>*Note that colors are used to make it easier to identify the different plots but they do not convey any information.</small>
+                            <small>
+                                <ul>
+                                    <li> Note that colors are used to make it easier to identify the different plots but they do not convey any information.</li>
+                                    <li> The values in parenthesis next to cell type indicate how many cells had that label in the dataset.</li>
+                                </ul>
+                            </small>
                         </div>
                     </Col>
                 </Row>

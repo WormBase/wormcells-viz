@@ -6,8 +6,27 @@
 - backend: a Python API based on Falcon to manage single cell datasets
 - frontend: a ReactJS app that fetches data from the backend and displays them through d3 charts
 - deployment: configuration files for nginx and systemd to help with deployment
+- data_preparation: a Python pipeline that uses [scvi-tools](https://scvi-tools.org) and [anndata](https://anndata.readthedocs.io)
 
-### Install
+### Data preparation
+
+This Python pipeline uses scvi-tools to go from gene count matrix to the 
+three anndatas that are used to deploy the app:
+- Heatmap anndata
+- Histogram anndata
+- Swarm plot anndata 
+
+The script `data_preparation.py` will perform all the steps and create these files.
+However it is relatively complex and if the input anndata doesn't conform to the 
+[WormBase anndata wrangling guidelines](https://github.com/WormBase/anndata-wrangling) it will fail.
+In order to help explain what the formats are, all the steps performed by the pipeline 
+are reviewed in [this Colab notebook](https://colab.research.google.com/github/WormBase/wormcells-notebooks/blob/main/wormcells_viz_pipeline_example.ipynb).
+
+Please note that the swarm plot anndata is the slowest one to generate because it requires pairwise DE of all cell types,
+if you have >100 celltypes it can take days to run the pipeline without parallelization. 
+If you have trouble using it please open an issue.
+
+### Install the app
 
 1. Follow the instructions to clone the repo form github
 2. From the project root folder, create a python virtual environment and activate it:
@@ -62,16 +81,23 @@
 
 1. Clone the git repo on the AWS instance
 2. Create a Python venv in the repo main folder
-   $ cd wormcells-viz; python3 -m venv venv
+```
+cd wormcells-viz;
+python3 -m venv venv
+```
 3. Activate the venv
-   $ source venv/bin/activate
+```
+source venv/bin/activate
+```
 4. Install Python requirements
-   $ pip3 install -r requirements.txt
-5. Copy the desired nginx config files from deployment/nginx to the /etc/nginx/site-enabled folder on the AWS instance
-6. Copy the systemd unit files and their config directories to /etc/systemd/system/ on the AWS instance
+```
+pip3 install -r requirements.txt
+```
+5. Copy the desired nginx config files from `deployment/nginx` to the `/etc/nginx/site-enabled` folder on the AWS instance
+6. Copy the systemd unit files and their config directories to `/etc/systemd/system/` on the AWS instance
 7. Modify the config files to point to the correct anndata file locations   
 8. Enable the services and start them
 9. Modify the .env file in the frontend react app folder to point to the AWS instance address with the configured api port for cengen   
-10. Build the frontend react app (`npm run build --production`) locally and copy the bundle to /var/www/wormcells-viz/cengen
+10. Build the frontend react app (`npm run build --production`) locally and copy the bundle to `/var/www/wormcells-viz/cengen`
 11. Repeat 6. and 7. for the other datasets
 12. Restart nginx
