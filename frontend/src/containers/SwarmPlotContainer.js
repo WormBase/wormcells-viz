@@ -96,6 +96,7 @@ const SwarmPlotContainer = () => {
         }));
         setData(dataMod);
         setIsLoading(false);
+        setSwarmplotSize(swarmplotSize => ({...swarmplotSize, height: (new Set(dataMod.map(d => d.y))).size * 15 + swarmplotSize.top + swarmplotSize.bottom}));
     }
 
     const drawSwarmplot = async () => {
