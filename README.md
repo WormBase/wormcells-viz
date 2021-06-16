@@ -3,8 +3,9 @@
 
 ### Repository structure
 
-- Backend: a Python API based on Falcon to manage single cell datasets
-- Frontend: a ReactJS app that fetches data from the backend and displays them through d3 charts
+- backend: a Python API based on Falcon to manage single cell datasets
+- frontend: a ReactJS app that fetches data from the backend and displays them through d3 charts
+- deployment: configuration files for nginx and systemd to help with deployment
 
 ### Install
 
@@ -60,6 +61,12 @@
 ### Deploy the app on AWS with nginx and gunicorn
 
 1. Clone the git repo on the AWS instance
+2. Create a Python venv in the repo main folder
+   $ cd wormcells-viz; python3 -m venv venv
+3. Activate the venv
+   $ source venv/bin/activate
+3. Install Python requirements
+   $ pip3 install -r requirements.txt
 2. Copy the desired nginx config files from deployment/nginx to the /etc/nginx/site-enabled folder on the AWS instance
 3. Copy the systemd unit files and their config directories to /etc/systemd/system/ on the AWS instance
 4. Modify the config files to point to the correct anndata file locations   
