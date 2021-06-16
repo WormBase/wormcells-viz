@@ -110,6 +110,10 @@ sudo systemctl start test
 sudo systemctl status test
 ```
 9. Modify the .env file in the frontend react app folder to point to the AWS instance address with the configured api port for cengen   
-10. Build the frontend react app (`npm install` and then `npm run build --production`) locally and copy the bundle to `/var/www/wormcells-viz/cengen`
+10. Build the frontend react app (`npm install` and then `npm run build --production`) locally and copy the bundle to `/var/www/wormcells-viz/test`
+```
+# if the built was done in the deploy machine wormcells-viz folder just do:
+sudo cp -r build/ /var/www/wormcells-viz/test
+```
 11. Repeat 6. and 7. for the other datasets
 12. Restart nginx
