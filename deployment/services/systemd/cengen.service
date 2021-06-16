@@ -1,0 +1,18 @@
+[Unit]
+Description = Wormcells-viz backend API - cengen data
+After = network.target
+
+[Service]
+PermissionsStartOnly = true
+PIDFile = /run/wormcells-viz/cengen.pid
+WorkingDirectory = /home/ubuntu/wormcells-viz
+ExecStartPre = /bin/mkdir /run/wormcells-viz
+ExecStartPre = /bin/chown -R www-data:www-data /run/wormcells-viz/
+ExecStart = /home/ubuntu/wormcells-viz/venv/bin/gunicorn --certfile=/etc/letsencrypt/live/wormcells-viz.textpressolab.com/fullchain.pem --keyfile=/etc/letsencrypt/live/wormcells-viz.textpressolab.com/privkey.pem -b 0.0.0.0:8010 backend.api:app -t=10000 --workers=2 --pid /run/wormcells-viz/cengen.pid
+ExecReload = /bin/kill -s HUP $MAINPID
+ExecStop = /bin/kill -s TERM $MAINPID
+ExecStopPost = /bin/rm -rf /run/wormcells-viz/cengen.pid
+PrivateTmp = true
+
+[Install]
+WantedBy = multi-user.target
