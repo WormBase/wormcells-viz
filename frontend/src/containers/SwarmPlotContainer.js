@@ -80,18 +80,20 @@ const SwarmPlotContainer = () => {
             let gene_name = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/name')
             gene_name = gene_name.data.name.data.label;
             values.forEach(([cell_name, rawVal, logfc]) => {
-                dataMod.push(
-                    {
-                        x: logfc,
-                        y: gene_name,
-                        tooltip_html:
-                            "<div><strong>Cell type</strong>: " + cell_name + "<br/>" +
-                            "<strong>Gene</strong>: " + gene_name + "<br/>" +
-                            "<strong>" + cell_name + " expression</strong>: 10<sup>" + rawVal.toFixed(1) + "</sup><br/>" +
-                            "<strong>" + res.data.cell + " expression</strong>: 10<sup>" + refVal.toFixed(1) + "</sup><br/>" +
-                            "<strong>log2 fold change</strong>: " + logfc.toFixed(1) + "</div>",
-                        selected: genes.has(gene_name)
-                    })
+                if (cell_name !== cell) {
+                    dataMod.push(
+                        {
+                            x: logfc,
+                            y: gene_name,
+                            tooltip_html:
+                                "<div><strong>Cell type</strong>: " + cell_name + "<br/>" +
+                                "<strong>Gene</strong>: " + gene_name + "<br/>" +
+                                "<strong>" + cell_name + " expression</strong>: 10<sup>" + rawVal.toFixed(1) + "</sup><br/>" +
+                                "<strong>" + res.data.cell + " expression</strong>: 10<sup>" + refVal.toFixed(1) + "</sup><br/>" +
+                                "<strong>log2 fold change</strong>: " + logfc.toFixed(1) + "</div>",
+                            selected: genes.has(gene_name)
+                        });
+                }
             });
         }));
         setData(dataMod);
