@@ -56,5 +56,15 @@
         Or
 
         $ npm start
+   
+### Deploy the app on AWS with nginx and gunicorn
 
-        Run the app with nginx for production
+1. Clone the git repo on the AWS instance
+2. Copy the desired nginx config files from deployment/nginx to the /etc/nginx/site-enabled folder on the AWS instance
+3. Copy the systemd unit files and their config directories to /etc/systemd/system/ on the AWS instance
+4. Modify the config files to point to the correct anndata file locations   
+5. Enable the services and start them
+6. Modify the .env file in the frontend react app folder to point to the AWS instance address with the configured api port for cengen   
+7. Build the frontend react app (`npm run build --production`) locally and copy the bundle to /var/www/wormcells-viz/cengen
+8. Repeat 6. and 7. for the other datasets
+9. Restart nginx
