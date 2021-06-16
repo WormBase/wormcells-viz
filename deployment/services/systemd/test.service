@@ -1,0 +1,18 @@
+[Unit]
+Description = Wormcells-viz backend API - test data
+After = network.target
+
+[Service]
+PermissionsStartOnly = true
+PIDFile = /run/wormcells-viz/test.pid
+WorkingDirectory = /home/ubuntu/wormcells-viz
+ExecStartPre = /bin/mkdir /run/wormcells-viz
+ExecStartPre = /bin/chown -R www-data:www-data /run/wormcells-viz/
+ExecStart = /home/ubuntu/wormcells-viz/venv/bin/gunicorn -b 0.0.0.0:8013 backend.api:app -t=10000 --workers=1 --pid /run/wormcells-viz/test.pid
+ExecReload = /bin/kill -s HUP $MAINPID
+ExecStop = /bin/kill -s TERM $MAINPID
+ExecStopPost = /bin/rm -rf /run/wormcells-viz/test.pid
+PrivateTmp = true
+
+[Install]
+WantedBy = multi-user.target
