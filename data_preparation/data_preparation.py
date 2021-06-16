@@ -106,7 +106,6 @@ import numpy as np
 from tqdm import tqdm
 import pandas as pd
 import os
-import scanpy
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -155,7 +154,7 @@ def load_or_train_scvi_model(model_name=model_name, anndata_path=anndata_path):
         # data generation pipeline
 
         model.train(check_val_every_n_epoch=1,
-                    use_gpu=False,
+                    use_gpu=True,
                     max_epochs=125,
                     plan_kwargs={'lr': 1e-3})
 
