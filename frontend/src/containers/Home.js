@@ -8,14 +8,11 @@ const Home = () => {
                 <p>This app is based on the <a
                     href="https://d3js.org/" target="_blank">D3.js</a> data visualization library.<br/>
                     Source code is available at <a href="https://github.com/WormBase/wormcells-viz/"
-                       target="_blank">github.com/WormBase/wormcells-viz</a>.
+                       target="_blank">github.com/WormBase/wormcells-viz</a>.<br/>
                     <br/> Please note that WormBase reprocesses the original data starting from the author provided gene
                     count matrices.
-                    <br/> The data was processed using the
-                    <a href="https://docs.scvi-tools.org/en/stable/api/reference/scvi.model.SCVI.html"
-                       target="_blank">scVI</a>
-                    model from
-                    <a href="https://scvi-tools.org/" target="_blank">scvi-tools</a>, a probabilistic framework
+                    <br/> The data was processed using the <a href="https://docs.scvi-tools.org/en/stable/api/reference/scvi.model.SCVI.html"
+                       target="_blank">scVI</a> model from <a href="https://scvi-tools.org/" target="_blank">scvi-tools</a>, a probabilistic framework
                     for single cell RNA sequencing data that explicitly models technical aspects of the data
                     such as batch and sequencing depth. scVI is a generative model that among other things can estimate
                     the gene expression rate of each gene in each cell - what fraction of the transcripts sampled would

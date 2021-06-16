@@ -3,7 +3,7 @@ server {
     access_log /var/log/nginx/access.log compression;
 
     # where the root here
-    root /var/www/wormcells-viz/packer2019;
+    root /var/www/wormcells-viz/packer2019/build;
 
 	server_name www.packer2019.textpressolab.com packer2019.textpressolab.com
     # what file to server as index

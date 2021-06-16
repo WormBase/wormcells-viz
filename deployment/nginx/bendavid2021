@@ -3,7 +3,7 @@ server {
     access_log /var/log/nginx/access.log compression;
 
     # where the root here
-    root /var/www/wormcells-viz/bendavid2021;
+    root /var/www/wormcells-viz/bendavid2021/build;
 
 	server_name www.bendavid2021.textpressolab.com bendavid2021.textpressolab.com
     # what file to server as index
