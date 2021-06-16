@@ -95,8 +95,20 @@ pip3 install -r requirements.txt
 ```
 5. Copy the desired nginx config files from `deployment/nginx` to the `/etc/nginx/site-enabled` folder on the AWS instance
 6. Copy the systemd unit files and their config directories to `/etc/systemd/system/` on the AWS instance
+```
+# for example
+sudo cp test.service /etc/systemd/system
+sudo cp -r test.service.d/ /etc/systemd/system
+```
 7. Modify the config files to point to the correct anndata file locations   
 8. Enable the services and start them
+```
+# project name is the filename, here `test`
+sudo systemctl enable test
+sudo systemctl start test
+# to verify the status
+sudo systemctl status test
+```
 9. Modify the .env file in the frontend react app folder to point to the AWS instance address with the configured api port for cengen   
 10. Build the frontend react app (`npm run build --production`) locally and copy the bundle to `/var/www/wormcells-viz/cengen`
 11. Repeat 6. and 7. for the other datasets
