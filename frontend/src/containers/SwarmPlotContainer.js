@@ -104,7 +104,7 @@ const SwarmPlotContainer = () => {
     const drawSwarmplot = async () => {
         setIsLoading(true);
         const d3Swarmplot = new Swarmplot('#swarmplot-div', swarmplotSize.top, swarmplotSize.right, swarmplotSize.bottom,
-            swarmplotSize.left, swarmplotSize.width, swarmplotSize.height, 20, [-10,10]);
+            swarmplotSize.left, swarmplotSize.width, swarmplotSize.height, 20, [-13,13]);
         d3Swarmplot.draw(data);
         setIsLoading(false);
     }
