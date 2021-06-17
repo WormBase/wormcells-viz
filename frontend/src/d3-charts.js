@@ -217,13 +217,13 @@ export class Histograms {
             .append("rect")
             .attr("x", 1)
             .attr("transform", function (d) {
-                return "translate(" + x(d.x) + "," + (yName(d.c) - d.y * lineHeight) + ")";
+                return "translate(" + x(d.x) + "," + (yName(d.c) - d.y * (lineHeight - 5)) + ")";
             })
             .attr("width", function (d) {
                 return width / (xdomain[1] - xdomain[0]) - 2;
             })
             .attr("height", function (d) {
-                return d.y * lineHeight;
+                return d.y * (lineHeight - 5);
             })
             .attr("fill", function (d) {
                 return d3ScaleChromatic.interpolateSinebow(d.color / n)
