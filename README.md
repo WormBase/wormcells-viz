@@ -23,7 +23,8 @@ In order to help explain what the formats are, all the steps performed by the pi
 are reviewed in [this Colab notebook](https://colab.research.google.com/github/WormBase/wormcells-notebooks/blob/main/wormcells_viz_pipeline_example.ipynb).
 
 Please note that the swarm plot anndata is the slowest one to generate because it requires pairwise DE of all cell types,
-if you have >100 celltypes it can take days to run the pipeline without parallelization. 
+if you have >100 celltypes it can take days to run the pipeline without parallelization, and the intermediary files can be quite big. 
+To make it easier to parallelize and run the pipeline on a cluster, we provide a snakemake file for running the pairwise DE step in parallel for each cell type.
 If you have trouble using it please open an issue.
 
 ### Install the app
