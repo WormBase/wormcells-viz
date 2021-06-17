@@ -77,8 +77,8 @@ const SwarmPlotContainer = () => {
         setCell(res.data.cell);
         let dataMod = [];
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, [refVal, values]]) => {
-            let gene_name = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/name')
-            gene_name = gene_name.data.name.data.label;
+            let gene_name = await axios(process.env.REACT_APP_WORMBASE_GENE_NAME + "/" + gene_id)
+            gene_name = gene_name.data;
             values.forEach(([cell_name, rawVal, logfc]) => {
                 if (cell_name !== cell) {
                     dataMod.push(

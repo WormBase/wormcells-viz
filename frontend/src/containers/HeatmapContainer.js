@@ -86,19 +86,19 @@ const HeatmapContainer = () => {
         let newGeneLabels = [];
         let newCells = new Set();
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, values]) => {
-            let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/concise_description')
-            let gene_name = await axios('http://rest.wormbase.org/rest/field/gene/' + gene_id + '/name')
-            newGeneLabels.push([gene_name.data.name.data.label, gene_id]);
+            let desc = await axios(process.env.REACT_APP_WORMBASE_GENE_DESC + "/" + gene_id)
+            let gene_name = await axios(process.env.REACT_APP_WORMBASE_GENE_NAME + "/" + gene_id)
+            newGeneLabels.push([gene_name.data, gene_id]);
             Object.entries(values).forEach(([cell_name, value]) => {
                 threeColsData.push({
-                    group: gene_name.data.name.data.label,
+                    group: gene_name.data,
                     variable: cell_name.replaceAll('_', ' ').trim(), value: 10**value,
                     tooltip_html: "<div id='currentTooltip'/><button class='btn-secondary small' style='float: right;' " +
                         "onclick='(function(){getElementById(\"currentTooltip\").parentElement.style.opacity = \"0\"; " +
                         "getElementById(\"currentTooltip\").parentElement.innerHTML = \"\";})();'>X</button>" +
                         "Gene ID: <a href='https://wormbase.org/species/c_elegans/gene/" + gene_id +
-                        "' target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data.name.data.label +
-                        "<br/>Gene description: " + desc.data.concise_description.data.text +
+                        "' target='_blank'>" + gene_id + "</a><br/>Gene Name: " + gene_name.data +
+                        "<br/>Gene description: " + desc.data +
                         "<br/><a href='ridge_line/" + gene_id + "'>View expression histogram for this gene</a><br/>Cell Name: " +
                         cell_name + "<br/>" + "Expression Frequency: 10<sup>" + value.toFixed(1) + "</sup>"
                 });

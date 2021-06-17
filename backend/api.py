@@ -12,7 +12,7 @@ import falcon
 
 from wsgiref import simple_server
 from falcon import HTTPStatus
-import numpy as np
+import urllib.request
 
 
 logger = logging.getLogger(__name__)
@@ -167,6 +167,26 @@ class CellsReader:
         resp.status = falcon.HTTP_OK
 
 
+class GeneDescriptionsReader:
+
+    def on_get(self, req, resp, gene_id):
+        with urllib.request.urlopen(f'http://rest.wormbase.org/rest/field/gene/{gene_id}/concise_description') as response:
+            desc = json.loads(response.read())
+            desc = desc["concise_description"]["data"]["text"]
+            resp.body = json.dumps(desc)
+            resp.status = falcon.HTTP_OK
+
+
+class GeneNameReader:
+
+    def on_get(self, req, resp, gene_id):
+        with urllib.request.urlopen(f'http://rest.wormbase.org/rest/field/gene/{gene_id}/name') as response:
+            name = json.loads(response.read())
+            name = name["name"]["data"]["label"]
+            resp.body = json.dumps(name)
+            resp.status = falcon.HTTP_OK
+
+
 def main():
     parser = argparse.ArgumentParser(description="Single cell backend")
     parser.add_argument("-e", "--heatmap-file", metavar="heatmap_file", dest="heatmap_file", type=str)
@@ -190,6 +210,8 @@ def main():
     app.add_route('/get_data_swarmplot', SwarmplotReader(file_storage))
     app.add_route('/get_all_genes', GenesReader(file_storage))
     app.add_route('/get_all_cells', CellsReader(file_storage))
+    app.add_route('/get_gene_concise_desc/{gene_id}', GeneDescriptionsReader())
+    app.add_route('/get_gene_name/{gene_id}', GeneNameReader())
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()
 
@@ -206,5 +228,7 @@ else:
     app.add_route('/get_data_swarmplot', SwarmplotReader(file_storage))
     app.add_route('/get_all_genes', GenesReader(file_storage))
     app.add_route('/get_all_cells', CellsReader(file_storage))
+    app.add_route('/get_gene_concise_desc/{gene_id}', GeneDescriptionsReader())
+    app.add_route('/get_gene_name/{gene_id}', GeneNameReader())
 
 

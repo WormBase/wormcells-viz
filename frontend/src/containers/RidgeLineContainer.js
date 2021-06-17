@@ -86,11 +86,11 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         // );
 
 
-        let desc = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/concise_description')
-        let geneName = await axios('http://rest.wormbase.org/rest/field/gene/' + res.data.gene_id + '/name')
-        setGeneName(geneName.data.name.data.label);
+        let desc = await axios(process.env.REACT_APP_WORMBASE_GENE_DESC + "/" + res.data.gene_id)
+        let geneName = await axios(process.env.REACT_APP_WORMBASE_GENE_NAME + "/" + res.data.gene_id)
+        setGeneName(geneName.data);
         setGeneID(res.data.gene_id);
-        setGeneDescription(desc.data.concise_description.data.text);
+        setGeneDescription(desc.data);
         setData(data);
         setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 50 * Object.keys(res.data.response).length + ridgeLineSize.top + ridgeLineSize.bottom}))
         setIsLoading(false);
