@@ -79,6 +79,10 @@ If you have trouble using it please open an issue.
    
 ### Deploy the app on AWS with nginx and gunicorn
 
+We based the instructions below on [this Digital Ocean guide](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04) for deploying Flask apps with Gunicorn on Ubuntu 18.04. 
+
+In addition to `requirements.txt` in order to make the front end build at step 10 you need _or_ you can build the app locally and scp the files to the server.
+
 1. Clone the git repo on the AWS instance
 2. Create a Python venv in the repo main folder
 ```
@@ -115,5 +119,5 @@ sudo systemctl status test
 # if the built was done in the deploy machine wormcells-viz folder just do:
 sudo cp -r build/ /var/www/wormcells-viz/test
 ```
-11. Repeat 6. and 7. for the other datasets
-12. Restart nginx
+11. Repeat from 6 (Copy the desired nginx config files...) to the step above for the other datasets
+12. Restart nginx: `sudo service nginx restart`

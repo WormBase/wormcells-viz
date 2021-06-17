@@ -62,7 +62,7 @@ anndata.uns['about'] = information about the dataset
 ### PLEASE MAKE SURE THESE ARGUMENTS MATCH YOUR DATA
 
 # path to anndata file on which to train the model
-anndata_path = 'adata.h5ad'
+anndata_path = 'cengen.h5ad'
 # this should be the label on which you'd like to stratify groups
 # typically it is cell_type or cell_subtype
 stratification_label = 'cell_subtype'
@@ -75,7 +75,7 @@ batch_key = 'sample_batch'
 
 # model_name is the name of the folder where scvi will look for the trained model, or
 # save the trained model if it doesn't find anything
-model_name = 'scvi_model'
+model_name = 'cengen_scvi_2021-06-13'
 
 ### these multiline strings will be added to the adata.uns['about'] property, it can be anything
 
@@ -99,13 +99,16 @@ https://github.com/WormBase/wormcells-viz
 
 ### END OF USER ARGUMENTS SECTION --- YOU SHOULDN'T NEED TO CHANGE ANYTHING BELOW HERE ####
 
+
 ### IMPORTS ###
+print('Starting imports...')
 import anndata
 import scvi
 import numpy as np
 from tqdm import tqdm
 import pandas as pd
 import os
+import scanpy
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -295,12 +298,14 @@ def compute_pairwise_de_one_group(group1_label,
                                   model_name=model_name
                                   ):
     adata = model.adata
-    print('Doing pairwise DE for ', stratification_label, group1_label)
     csv_filename = model_name + '+pairwise_de_one_group+' + group1_label + '+.csv'
-    if os.path.isfile(csv_filename):
+    
+    
+    if os.path.isfile('./pairwise_de/'+csv_filename):
         print('Skipping pairwise DE, csv file already exists: ', csv_filename)
         return None
     else:
+        print('Doing pairwise DE for ', stratification_label, group1_label)
         # for a given group1_label (eg `Intestine`) do pairwise DE vs all other labels in that category (eg all other cell types)
         obs_stratification_label_unique_values = adata.obs[stratification_label].unique()
         pairwise_de_one_group = pd.DataFrame()
@@ -317,7 +322,10 @@ def compute_pairwise_de_one_group(group1_label,
             de_df['group2'] = group2_label
             pairwise_de_one_group = pairwise_de_one_group.append(de_df)
         # write to disk just in case
-        pairwise_de_one_group.to_csv(csv_filename)
+        if not os.path.exists('pairwise_de'):
+            os.makedirs('pairwise_de')
+        pairwise_de_one_group.to_csv('./pairwise_de/'+csv_filename)
+        
         return pairwise_de_one_group
 
 
@@ -330,11 +338,11 @@ def make_swarmplot_anndata(model,
     # check that all files exist
     for group1_label in obs_stratification_label_unique_values:
         csv_filename = model_name + '+pairwise_de_one_group+' + group1_label + '+.csv'
-        if not os.path.isfile(csv_filename):
+        if not os.path.isfile('./pairwise_de/'+csv_filename):
             print('Aborting -- Missing pairwise DE csv file: ', csv_filename)
             return None
     # initialize one pairwise_de dataframe
-    pairwise_de = pd.read_csv(csv_filename, index_col=0)
+    pairwise_de = pd.read_csv('./pairwise_de/'+csv_filename, index_col=0)
     # make one swarm df to get the shape and order of the cell types/genes to initialize adata
     mock_swarmdf = pairwise_de.pivot(values='lfc_median', columns='group2').round(2)
 
@@ -348,7 +356,7 @@ def make_swarmplot_anndata(model,
     # loop through the celltypes and stores the lfc values for each cell in a layer
     for group1_label in tqdm(mock_swarmdf.columns):
         csv_filename = model_name + '+pairwise_de_one_group+' + group1_label + '+.csv'
-        pairwise_de = pd.read_csv(csv_filename, index_col=0)
+        pairwise_de = pd.read_csv('./pairwise_de/'+csv_filename, index_col=0)
         swarmdf = pairwise_de[pairwise_de['group1'] == group1_label].pivot(values='lfc_median', columns='group2').round(
             2)
         swarmplot_adata.layers[group1_label] = swarmdf.values.T
@@ -381,6 +389,7 @@ def make_swarmplot_anndata(model,
 
 
 if __name__ == '__main__':
+    print('Starting the pipeline...')
     model = load_or_train_scvi_model(model_name=model_name, anndata_path=anndata_path)
 
     de_global = make_de_global(stratification_label=stratification_label, model=model, model_name=model_name)
