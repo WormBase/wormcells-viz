@@ -36,7 +36,7 @@ const Home = () => {
                     <center>
                         <Card style={{ width: '85em' }} className="text-center">
                             <Card.Body>
-                                <p>{process.env.REACT_APP_DATASET_DESCRIPTION}</p>
+                                <p dangerouslySetInnerHTML={{__html: process.env.REACT_APP_DATASET_DESCRIPTION}}/>
                             </Card.Body>
                         </Card>
                     </center>
