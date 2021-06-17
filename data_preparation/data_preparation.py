@@ -311,7 +311,7 @@ def compute_pairwise_de_one_group(group1_label,
         pairwise_de_one_group = pd.DataFrame()
         for group2_label in tqdm(obs_stratification_label_unique_values):
             de_df = model.differential_expression(
-                groupby='cell_type',
+                groupby=stratification_label,
                 group1=group1_label,
                 group2=group2_label,
                 silent=True,

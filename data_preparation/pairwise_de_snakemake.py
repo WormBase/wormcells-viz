@@ -41,7 +41,7 @@ MODEL_NAME='cengen_scvi'
 STRATIFICATION_GROUP='cell_subtype'
 rule all:
     input:
-        expand('{MODEL_NAME}+pairwise_de_one_group+{sample}+.csv', sample=SAMPLE_LIST)        
+        expand('{model_name}+pairwise_de_one_group+{sample}+.csv', sample=SAMPLE_LIST, model_name=MODEL_NAME)        
         
 rule run_pairwisede:   
     params: 
