@@ -51,7 +51,7 @@ class FileStorageEngine(object):
 
     def get_data_histogram(self, gene_id: str = None):
         gene_id = gene_id if gene_id else self.get_all_genes()[0]
-        return {cell_name: self.histogram.layers[gene_id][idx].tolist() for
+        return {cell_name: self.histogram.layers[gene_id][idx].toarray()[0].tolist() for
                 idx, cell_name in enumerate(self.histogram.obs.index)}, gene_id
 
     def get_data_swarmplot(self, cell: str = None, sort_by: str = 'p_value', ascending: bool = True,
