@@ -1,6 +1,12 @@
 # Wormcells-viz
 > Visualization tools for *C. elegans* single cell data 
 
+### Current Deployments
+
+- **CeNGEN L4 neuron dataset**: [cengen.textpressolab.com](https://cengen.textpressolab.com/)
+- **Packer 2019 embryogenesis dataset**: [packer2019.textpressolab.com](https://packer2019.textpressolab.com/)
+- **Ben-David 2021 L2 larvae dataset**: [bendavid2021.textpressolab.com](https://bendavid2021.textpressolab.com/)
+
 ### Repository structure
 
 - backend: a Python API based on Falcon to manage single cell datasets
