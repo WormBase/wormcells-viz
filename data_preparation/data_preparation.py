@@ -110,6 +110,7 @@ import pandas as pd
 import os
 import scanpy
 import warnings
+from scipy import sparse
 
 warnings.filterwarnings("ignore")
 print('Using scvi-tools version:', scvi.__version__)
@@ -284,8 +285,8 @@ def make_histogram_anndata(model,
                     np.histogram(log10_normalized_expression_in_celltype, bins=100, range=(-10, 0), density=False)[0]
                 gene_histogram_df.loc[label] = \
                     np.histogram(log10_normalized_expression_in_celltype, bins=100, range=(-10, 0), density=False)[0]
-            # need to convert these to int or anndata doesn't save
-            gene_histogram_adata.layers[gene_id] = gene_histogram_df.values.astype(int)
+            # convert to sparse matrix to reduce final file size
+            gene_histogram_adata.layers[gene_id]=sparse.csr_matrix(gene_histogram_df.values.astype('int16'))
 
         # add some meatadata explaining what the data is
         gene_histogram_adata.uns['about'] = about_histograms
@@ -360,6 +361,8 @@ def make_swarmplot_anndata(model,
         swarmdf = pairwise_de[pairwise_de['group1'] == group1_label].pivot(values='lfc_median', columns='group2').round(
             2)
         swarmplot_adata.layers[group1_label] = swarmdf.values.T
+        ## convert data type float16 to reduce final anndata file size
+        swarmplot_adata.layers[group1_label] = swarmplot_adata.layers[group1_label].astype('float16')
 
         # now performs one vs all DE and stores those results in adata.uns for access so that the genes can be sorted according to them
         global_de = model.differential_expression(
@@ -369,10 +372,8 @@ def make_swarmplot_anndata(model,
             n_samples=5000,
             silent=True
         )
-        global_de = global_de[['proba_not_de', 'bayes_factor', 'scale1', 'scale2',
-                               'lfc_mean', 'lfc_median', 'lfc_std', 'lfc_min', 'lfc_max', 'comparison']]
-        global_de['log10scale1'] = np.log10(global_de['scale1'])
-        global_de['log10scale2'] = np.log10(global_de['scale2'])
+        # only keep needed columns as type float16 to reduce final anndata file size
+        global_de = global_de[['proba_not_de', 'scale1', 'scale2', 'lfc_mean', 'lfc_median']].astype('float16')
         swarmplot_adata.uns[group1_label] = global_de
         # also store the heatmap on the uns field for showing the mean expressison on tissue
         # during mouseover
@@ -393,21 +394,22 @@ if __name__ == '__main__':
     model = load_or_train_scvi_model(model_name=model_name, anndata_path=anndata_path)
 
     de_global = make_de_global(stratification_label=stratification_label, model=model, model_name=model_name)
-
+    print('✔️ Done with global DE')
     make_heatmap_anndata(de_global=de_global, about=about_heatmap,
                          model_name=model_name,
                          stratification_label=stratification_label)
-
+    print('✔️✔️ Done with heatmap')
     make_histogram_anndata(stratification_label=stratification_label,
                            model=model,
                            about_histograms=about_histograms)
-
+    print('✔️✔️✔️ Done with histogram')
     for group1_label in model.adata.obs[stratification_label].unique():
         compute_pairwise_de_one_group(stratification_label=stratification_label,
                                       model=model,
                                       model_name=model_name,
                                       group1_label=group1_label)
-
+    print('✔️✔️✔️✔️ Done with pairwise DE')
     make_swarmplot_anndata(stratification_label=stratification_label,
                            model=model,
                            about_swarmplots=about_swarmplots)
+    print('✔️✔️✔️✔️✔️ Done with swarmplot')

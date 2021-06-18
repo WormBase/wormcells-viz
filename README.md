@@ -1,6 +1,12 @@
 # Wormcells-viz
 > Visualization tools for *C. elegans* single cell data 
 
+### Current Deployments
+
+- **CeNGEN L4 neuron dataset**: [cengen.textpressolab.com](https://cengen.textpressolab.com/)
+- **Packer 2019 embryogenesis dataset**: [packer2019.textpressolab.com](https://packer2019.textpressolab.com/)
+- **Ben-David 2021 L2 larvae dataset**: [bendavid2021.textpressolab.com](https://bendavid2021.textpressolab.com/)
+
 ### Repository structure
 
 - backend: a Python API based on Falcon to manage single cell datasets
@@ -23,7 +29,8 @@ In order to help explain what the formats are, all the steps performed by the pi
 are reviewed in [this Colab notebook](https://colab.research.google.com/github/WormBase/wormcells-notebooks/blob/main/wormcells_viz_pipeline_example.ipynb).
 
 Please note that the swarm plot anndata is the slowest one to generate because it requires pairwise DE of all cell types,
-if you have >100 celltypes it can take days to run the pipeline without parallelization. 
+if you have >100 celltypes it can take days to run the pipeline without parallelization, and the intermediary files can be quite big. 
+To make it easier to parallelize and run the pipeline on a cluster, we provide a snakemake file for running the pairwise DE step in parallel for each cell type.
 If you have trouble using it please open an issue.
 
 ### Install the app
