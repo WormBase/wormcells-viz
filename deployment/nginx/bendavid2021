@@ -36,7 +36,6 @@ server {
         stub_status on;
    	}
 
-   	listen [::]:443 ssl ipv6only=on; # managed by Certbot
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/cengen.textpressolab.com/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/cengen.textpressolab.com/privkey.pem; # managed by Certbot
