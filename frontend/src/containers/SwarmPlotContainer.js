@@ -20,6 +20,7 @@ import _ from 'lodash';
 
 const SwarmPlotContainer = () => {
     const [cell, setCell] = useState('');
+    const [selectedCell, setSelectedCell] = useState('');
     const [genes, setGenes] = useState(new Set());
     const [tempNumGenes, setTempNumGenes] = useState(50);
     const [numGenes, setNumGenes] = useState(50);
@@ -74,7 +75,7 @@ const SwarmPlotContainer = () => {
         setIsLoading(true);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_SWARMPLOT;
         const res = await axios.post(apiEndpoint, {cell: cell, max_num_genes: numGenes, sort_by: sortBy, ascending: sortAscending});
-        setCell(res.data.cell);
+        setSelectedCell(res.data.cell);
         let dataMod = [];
         await Promise.all(Object.entries(res.data.response).map(async([gene_id, [refVal, values]]) => {
             let gene_name = await axios(process.env.REACT_APP_WORMBASE_GENE_NAME + "/" + gene_id)
@@ -123,7 +124,7 @@ const SwarmPlotContainer = () => {
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col sm={12} center>
-                                    <h5 className="text-center">Relative Log-fold change in expression of top {numGenes} specific genes for cell '{cell}'</h5>
+                                    <h5 className="text-center">Relative Log-fold change in expression of top {numGenes} specific genes for cell '{selectedCell}'</h5>
                                 </Col>
                             </Row>
                             <Row>
