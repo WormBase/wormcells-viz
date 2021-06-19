@@ -98,6 +98,8 @@ class HeatmapReader:
             cell_names = req.media["cell_names"] if "cell_names" in req.media and req.media["cell_names"] and \
                                                     req.media["cell_names"] != [''] else None
             results = self.storage.get_data_heatmap(gene_ids=gene_ids, cell_names=cell_names)
+            logger.info("Requested heatmap data by IP " + req.access_route + " gene_ids=" + ",".join(gene_ids) +
+                        " cells=" + ",".join(cell_names))
             resp.body = f'{{"response": {json.dumps(results)}}}'
             resp.status = falcon.HTTP_OK
         else:
@@ -117,6 +119,7 @@ class HistogramReader:
                 results, gene_id = self.storage.get_data_histogram(gene_id=gene_id)
             except KeyError:
                 results, gene_id = {}, gene_id
+            logger.info("Requested histogram data by IP " + req.access_route + " gene_id=" + gene_id)
             resp.body = f'{{"response": {json.dumps(results)}, "gene_id": "{gene_id}"}}'
             resp.status = falcon.HTTP_OK
         else:
@@ -139,6 +142,8 @@ class SwarmplotReader:
             sort_by = req.media.get("sort_by")
             cell_name, results = self.storage.get_data_swarmplot(cell=cell, max_num_genes=max_num_genes,
                                                                  sort_by=sort_by, ascending=ascending)
+            logger.info("Requested swarmplot data by IP " + req.access_route + " cell=" + cell_name +
+                        " max_num_genes=" + str(max_num_genes) + " ascending=" + str(ascending) + " sort_by=" + sort_by)
             resp.body = f'{{"response": {json.dumps(results)}, "cell": "{cell_name}"}}'
             resp.status = falcon.HTTP_OK
         else:
