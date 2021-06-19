@@ -13,6 +13,7 @@ import falcon
 from wsgiref import simple_server
 from falcon import HTTPStatus
 import urllib.request
+from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -100,8 +101,8 @@ class HeatmapReader:
             results = self.storage.get_data_heatmap(gene_ids=gene_ids, cell_names=cell_names)
             gene_ids = list(results.keys())
             cell_names = list(results[gene_ids[0]].keys())
-            print("Requested heatmap data by IP " + req.access_route[0] + " gene_ids=" + ",".join(gene_ids) +
-                  " cells=" + ",".join(cell_names))
+            print(str(datetime.now()) + " - Requested heatmap data by IP " + req.access_route[0] + " gene_ids=" +
+                  ",".join(gene_ids) + " cells=" + ",".join(cell_names))
             resp.body = f'{{"response": {json.dumps(results)}}}'
             resp.status = falcon.HTTP_OK
         else:
@@ -121,7 +122,7 @@ class HistogramReader:
                 results, gene_id = self.storage.get_data_histogram(gene_id=gene_id)
             except KeyError:
                 results, gene_id = {}, gene_id
-            print("Requested histogram data by IP " + req.access_route[0] + " gene_id=" + gene_id)
+            print(str(datetime.now()) + "Requested histogram data by IP " + req.access_route[0] + " gene_id=" + gene_id)
             resp.body = f'{{"response": {json.dumps(results)}, "gene_id": "{gene_id}"}}'
             resp.status = falcon.HTTP_OK
         else:
@@ -144,7 +145,7 @@ class SwarmplotReader:
             sort_by = req.media.get("sort_by")
             cell_name, results = self.storage.get_data_swarmplot(cell=cell, max_num_genes=max_num_genes,
                                                                  sort_by=sort_by, ascending=ascending)
-            print("Requested swarmplot data by IP " + req.access_route[0] + " cell=" + cell_name +
+            print(str(datetime.now()) + "Requested swarmplot data by IP " + req.access_route[0] + " cell=" + cell_name +
                   " max_num_genes=" + str(max_num_genes) + " ascending=" + str(ascending) + " sort_by=" + sort_by)
             resp.body = f'{{"response": {json.dumps(results)}, "cell": "{cell_name}"}}'
             resp.status = falcon.HTTP_OK
