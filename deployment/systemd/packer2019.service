@@ -7,15 +7,14 @@ PermissionsStartOnly = true
 PIDFile = /run/wormcells-viz/packer2019.pid
 WorkingDirectory = /home/ubuntu/wormcells-viz
 ExecStartPre = /bin/mkdir -p /run/wormcells-viz
-ExecStartPre = /bin/mkdir -p /var/log/wormcells-viz
 ExecStartPre = /bin/chown -R www-data:www-data /run/wormcells-viz/
 ExecStart = /home/ubuntu/wormcells-viz/venv/bin/gunicorn --certfile=/etc/letsencrypt/live/cengen.textpressolab.com/fullchain.pem --keyfile=/etc/letsencrypt/live/cengen.textpressolab.com/privkey.pem -b 0.0.0.0:8012 backend.api:app -t=10000 --workers=2 --pid /run/wormcells-viz/packer2019.pid
 ExecReload = /bin/kill -s HUP $MAINPID
 ExecStop = /bin/kill -s TERM $MAINPID
 ExecStopPost = /bin/rm -rf /run/wormcells-viz/packer2019.pid
 PrivateTmp = true
-StandardOutput=append:/var/log/wormcells-viz/packer.log
-StandardError=append:/var/log/wormcells-viz/packer.err
+StandardOutput=append:/var/log/packer2019.log
+StandardError=append:/var/log/packer2019.err
 
 [Install]
 WantedBy = multi-user.target
