@@ -1,0 +1,33 @@
+global:
+  config_version: 3
+input:
+  type: file
+  path: /var/log/cengen.log
+  readall: true # Read from the beginning of the file? False means we start at the end of the file and read only new lines.
+imports:
+- type: grok_patterns
+  dir: ./patterns
+grok_patterns:
+- 'EXIM_MESSAGE [a-zA-Z ]*'
+metrics:
+- type: counter
+  name: number_of_api_calls_heatmap
+  help: Total number of api calls for heatmap data.
+  match: 'Requested heatmap data'
+  labels:
+    logfile: '{{base .logfile}}'
+- type: counter
+  name: number_of_api_calls_histogram
+  help: Total number of api calls for histogram data.
+  match: 'Requested histogram data'
+  labels:
+    logfile: '{{base .logfile}}'
+- type: counter
+  name: number_of_api_calls_swarmplot
+  help: Total number of api calls for swarmplot data.
+  match: 'Requested swarmplot data'
+  labels:
+    logfile: '{{base .logfile}}'
+server:
+  protocol: http
+  port: 9115
