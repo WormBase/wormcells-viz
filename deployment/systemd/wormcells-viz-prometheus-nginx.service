@@ -1,0 +1,11 @@
+[Unit]
+Description=Prometheus exporter for wormcells-viz nginx instance
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/
+ExecStart=/home/ubuntu/nginx-prometheus-exporter -nginx.scrape-uri http://wormcells-viz.textpressolab.com/metrics
+
+[Install]
+WantedBy=multi-user.target
