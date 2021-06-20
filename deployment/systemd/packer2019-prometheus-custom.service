@@ -1,0 +1,12 @@
+[Unit]
+Description=Prometheus exporter for wormcells-viz logs
+Requires=packer2019.service
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/grok_exporter
+ExecStart=/home/ubuntu/grok_exporter/grok_exporter -config /home/ubuntu/grok_exporter/packer2019_config.yml
+
+[Install]
+WantedBy=multi-user.target

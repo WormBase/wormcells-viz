@@ -1,14 +1,12 @@
 [Unit]
 Description=Prometheus exporter for wormcells-viz logs
-Requires=cengen.service
 Requires=bendavid2021.service
-Requires=packer2019.service
 
 [Service]
 User=ubuntu
 Group=ubuntu
 WorkingDirectory=/home/ubuntu/grok_exporter
-ExecStart=/home/ubuntu/grok_exporter/grok_exporter -config /home/ubuntu/grok_exporter/config.yml
+ExecStart=/home/ubuntu/grok_exporter/grok_exporter -config /home/ubuntu/grok_exporter/bendavid2021_config.yml
 
 [Install]
 WantedBy=multi-user.target
