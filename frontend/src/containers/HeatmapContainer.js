@@ -252,7 +252,7 @@ const HeatmapContainer = () => {
                                                 remItemFunction={(gene) => setGenes(genes.filter(g => g !== gene))}
                                                 searchType={"gene"}
                                                 sampleQuery={"e.g. dbl-1"}
-                                                listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}
+                                                listIDsAPI={process.env.REACT_APP_WORMBASE_GENE_NAME}
                                             />
                                         </Tab.Pane>
                                         <Tab.Pane eventKey={2}>

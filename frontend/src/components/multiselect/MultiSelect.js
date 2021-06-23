@@ -171,7 +171,7 @@ const MultiSelect = (props) => {
                                                   searchType={props.searchType} />
                                     : ""}
                                 {showUploadIDs ?
-                                    <BulkIDUpload addItemFunction={props.addItemFunction}
+                                    <BulkIDUpload addMultipleItemsFunction={props.addMultipleItemsFunction}
                                                   close={() => setUploadIDs(false)}
                                                   searchType={props.searchType}
                                                   listIDsAPI={props.listIDsAPI}

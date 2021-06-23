@@ -6,7 +6,7 @@ import {useState} from "react";
 import {FiPlusCircle} from "react-icons/fi";
 import {AiFillQuestionCircle} from "react-icons/all";
 
-const BulkIDUpload = ({addItemFunction, close, listIDsAPI, searchType, itemsNamePlural}) => {
+const BulkIDUpload = ({addMultipleItemsFunction, close, listIDsAPI, searchType, itemsNamePlural}) => {
 
     const [uploadedIDs, setUploadedIDs] = useState("");
 
@@ -20,18 +20,20 @@ const BulkIDUpload = ({addItemFunction, close, listIDsAPI, searchType, itemsName
                                  setUploadedIDs(e.target.value);
                              }}/>
             </FormGroup>
-            <Button size="sm" variant="outline-primary" onClick={() => {
+            <Button size="sm" variant="outline-primary" onClick={async () => {
                 if (uploadedIDs !== "") {
                     let entityIDs = uploadedIDs.split("\n");
                     if (entityIDs.length === 1) {
                         entityIDs = uploadedIDs.split(",");
                     }
-                    entityIDs.forEach(async (geneId) => {
-                        let data = await axios.get(listIDsAPI + geneId.trim() + '/name');
+                    let cleanData = [];
+                    await Promise.all(entityIDs.map(async (geneId) => {
+                        let data = await axios.get(listIDsAPI + "/" + geneId.trim());
                         if (data.data) {
-                            addItemFunction(data.data.name.data.label + " ( " + geneId + " )");
+                            cleanData.push(data.data + " ( " + geneId + " )");
                         }
-                    });
+                    }));
+                    addMultipleItemsFunction(cleanData);
                 }
             }}><FiPlusCircle/>&nbsp; Add</Button> &nbsp;&nbsp;{searchType === "gene" ? <a href="https://wormbase.org/tools/mine/gene_sanitizer.cgi" target="_blank" className="pull-right">WB gene name sanitizer <OverlayTrigger placement="top" overlay={
                 <Tooltip>Screen a list of <i>C. elegans</i> gene names and identifiers to find whether they were renamed, merged, split, or share sequence with another gene</Tooltip>}>
@@ -41,7 +43,6 @@ const BulkIDUpload = ({addItemFunction, close, listIDsAPI, searchType, itemsName
 }
 
 BulkIDUpload.propTypes = {
-    addItemFunction: PropTypes.func,
     close: PropTypes.func,
     listIDsAPI: PropTypes.string,
     itemsNamePlural: PropTypes.string
