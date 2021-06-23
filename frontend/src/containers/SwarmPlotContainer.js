@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useQuery} from "react-query";
-import {Swarmplot} from "@wormbase/d3-charts";
+import {Swarmplot} from "../d3-charts";
 import axios from "axios";
 import {
     Button,
@@ -87,8 +87,12 @@ const SwarmPlotContainer = () => {
                             x: logfc,
                             y: gene_name,
                             tooltip_html:
-                                "<div><strong>Cell type</strong>: " + cell_name + "<br/>" +
+                                "<div id='currentTooltip'/><button class='btn-secondary small' style='float: right;' " +
+                                "onclick='(function(){getElementById(\"currentTooltip\").parentElement.style.opacity = \"0\"; " +
+                                "getElementById(\"currentTooltip\").parentElement.innerHTML = \"\";})();'>X</button>" +
+                                "<strong>Cell type</strong>: " + cell_name + "<br/>" +
                                 "<strong>Gene</strong>: " + gene_name + "<br/>" +
+                                "<a href='ridge_line/" + gene_id + "'>View expression histogram for this gene</a><br/>" +
                                 "<strong>" + cell_name + " expression</strong>: 10<sup>" + rawVal.toFixed(1) + "</sup><br/>" +
                                 "<strong>" + res.data.cell + " expression</strong>: 10<sup>" + refVal.toFixed(1) + "</sup><br/>" +
                                 "<strong>log2 fold change</strong>: " + logfc.toFixed(1) + "</div>",
