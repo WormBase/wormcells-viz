@@ -3,7 +3,6 @@ import { Heatmap, Dotplot } from "@wormbase/d3-charts";
 
 import axios from 'axios';
 import * as d3 from 'd3';
-import {saveSvgAsPng} from 'save-svg-as-png'
 import {
     Col,
     Row,
@@ -16,6 +15,7 @@ import _ from 'lodash';
 import MultiSelect from "../components/multiselect/MultiSelect";
 import {useQuery} from "react-query";
 import {clearLegend, drawHeatmapLegend} from "../d3-charts";
+import ExportImage from "../components/ExportImage";
 
 const HeatmapContainer = () => {
 
@@ -190,8 +190,7 @@ const HeatmapContainer = () => {
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>
-                                    {isLoading ? null : <Button variant="secondary" size="sm"
-                                            onClick={() => saveSvgAsPng(document.getElementById("heatmap-div").children[0], "diagram.png")}>Export image</Button>}
+                                    {isLoading ? null : <ExportImage nodeId="heatmap-div"/>}
                                 </Col>
                                 <Col>
                                     <div align="right">
