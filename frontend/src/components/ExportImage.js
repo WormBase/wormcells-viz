@@ -3,6 +3,7 @@ import {Button, Form} from "react-bootstrap";
 import * as htmlToImage from "html-to-image";
 import download from "downloadjs";
 import { jsPDF } from "jspdf";
+import {FiChevronDown, FiChevronUp} from "react-icons/all";
 
 const downloadPNG = (node, filename = 'diagram', height = undefined, width = undefined) => {
     htmlToImage.toPng(node, {backgroundColor: 'white', canvasWidth: width, canvasHeight: height})
@@ -77,13 +78,19 @@ const ExportImage = ({nodeId}) => {
                 </div>
                 &nbsp;
                 <div className="mb-1">
-                    <Button size="sm" variant="light" onClick={() => {setShowOptions(!showOptions)}}>{showOptions ? "hide" : "show"} options</Button>
+                    <Button size="sm" variant="light" onClick={() => {setShowOptions(!showOptions)}}>{showOptions ? <FiChevronUp/> : <FiChevronDown/>}</Button>
                 </div>
             </Form>
             {showOptions ?
             <Form>
                 <div className="mb-1">
-                    <Form.Control as="select" size="sm" onChange={(e) => setFormat(e.target.value)}>
+                    <Form.Control as="select" size="sm" onChange={(e) => {
+                        setFormat(e.target.value);
+                        if (e.target.value === "SVG") {
+                            setWidth('');
+                            setHeight('');
+                        }
+                    }}>
                         <option value="JPG">JPG</option>
                         <option value="PNG">PNG</option>
                         <option value="SVG">SVG</option>
@@ -91,10 +98,18 @@ const ExportImage = ({nodeId}) => {
                     </Form.Control>
                 </div>
                 <div className="mb-1">
-                    <Form.Control placeholder="Height" onChange={e => setHeight(e.target.value)}/>
+                    <Form.Control placeholder="Height" onChange={e => {
+                        if (!isNaN(e.target.value)) {
+                            setHeight(e.target.value)
+                        }
+                    }} disabled={format==="SVG"} value={height}/>
                 </div>
                 <div className="mb-1">
-                    <Form.Control placeholder="Width" onChange={e => setWidth(e.target.value)}/>
+                    <Form.Control placeholder="Width" onChange={e => {
+                        if (!isNaN(e.target.value)) {
+                            setWidth(e.target.value)
+                        }
+                    }} disabled={format==="SVG"} value={width}/>
                 </div>
                 <div className="mb-1">
                     <Form.Control placeholder="Image Name (w/o ext.)" onChange={e => setFilename(e.target.value)}/>
