@@ -45,10 +45,21 @@ class FileStorageEngine(object):
         gene_ids = gene_ids if gene_ids else self.get_all_genes()[0:20]
         cell_names = sorted(list(set(cell_names if cell_names else self.get_all_cells()[0:20])), reverse=True)
         results_dict = defaultdict(dict)
+        valid_cell_names = self.get_all_cells()
+        valid_gene_ids = self.get_all_genes()
+        excluded_cells = set()
+        excluded_genes = set()
         for cell_name in cell_names:
+            if cell_name not in valid_cell_names:
+                excluded_cells.add(cell_name)
+                continue
             for gene_id in gene_ids:
+                if gene_id not in valid_gene_ids:
+                    excluded_genes.add(gene_id)
+                    continue
                 results_dict[gene_id][cell_name] = float(self.heatmap[cell_name, gene_id].X)
-        return dict(results_dict)
+        excluded_entities = [*excluded_cells, *excluded_genes]
+        return dict(results_dict), excluded_entities
 
     def get_data_histogram(self, gene_id: str = None):
         gene_id = gene_id if gene_id else self.get_all_genes()[0]
@@ -98,12 +109,12 @@ class HeatmapReader:
                                                 req.media["gene_ids"] != [''] else None
             cell_names = req.media["cell_names"] if "cell_names" in req.media and req.media["cell_names"] and \
                                                     req.media["cell_names"] != [''] else None
-            results = self.storage.get_data_heatmap(gene_ids=gene_ids, cell_names=cell_names)
+            results, excluded_entites = self.storage.get_data_heatmap(gene_ids=gene_ids, cell_names=cell_names)
             gene_ids = list(results.keys())
             cell_names = list(results[gene_ids[0]].keys())
             print(str(datetime.now()) + " - Requested heatmap data by IP " + req.access_route[0] + " gene_ids=" +
                   ",".join(gene_ids) + " cells=" + ",".join(cell_names))
-            resp.body = f'{{"response": {json.dumps(results)}}}'
+            resp.body = f'{{"response": {json.dumps(results)}, "excludedEntities": {json.dumps(excluded_entites)}}}'
             resp.status = falcon.HTTP_OK
         else:
             resp.status = falcon.HTTP_BAD_REQUEST

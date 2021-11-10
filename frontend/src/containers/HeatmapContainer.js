@@ -9,7 +9,7 @@ import {
     Container,
     Button,
     Spinner,
-    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Card, FormControl, Form
+    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Card, FormControl, Form, Modal
 } from "react-bootstrap";
 import _ from 'lodash';
 import MultiSelect from "../components/multiselect/MultiSelect";
@@ -33,6 +33,7 @@ const HeatmapContainer = () => {
     const [minExprFreq, setMinExprFreq] = useState(0);
     const [showAllCells, setShowAllCells] = useState(true);
     const [filterCells, setFilterCells] = useState('');
+    const [excludedEntities, setExcludedEntities] = useState([]);
 
     const allCells = useQuery('allCells', async () => {
         let data = await axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_CELLS);
@@ -113,6 +114,7 @@ const HeatmapContainer = () => {
         setData(threeColsData);
         setIsLoading(false);
         setHeatMapSize(heatMapSize => ({...heatMapSize, height: newCells.size * 28 + heatMapSize.top + heatMapSize.bottom}));
+        setExcludedEntities(res.data.excludedEntities)
     }
 
     const drawHeatmap = async () => {
@@ -317,6 +319,19 @@ const HeatmapContainer = () => {
                     </Col>
                 </Row>
             </Container>
+            <Modal show={excludedEntities.length > 0}>
+                <Modal.Body>
+                    The following entities were not found in the dataset and have been removed from the selection:
+                    <br/>
+                    {excludedEntities.map(e => {return <p>{e}</p>})}
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setExcludedEntities([])}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
