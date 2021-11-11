@@ -9,13 +9,14 @@ import {
     Container,
     Button,
     Spinner,
-    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Card, FormControl, Form, Modal
+    ToggleButtonGroup, ToggleButton, FormCheck, Tab, Nav, Form, Modal
 } from "react-bootstrap";
 import _ from 'lodash';
 import MultiSelect from "../components/multiselect/MultiSelect";
 import {useQuery} from "react-query";
 import {clearLegend, drawHeatmapLegend} from "../d3-charts";
 import ExportImage from "../components/ExportImage";
+import CellCheckboxSelector from "../components/CellCheckboxSelector";
 
 const HeatmapContainer = () => {
 
@@ -31,8 +32,6 @@ const HeatmapContainer = () => {
     const [relativeFreqs, setRelativeFreqs] = useState(true);
     const [maxExprFreq, setMaxExprFreq] = useState(0);
     const [minExprFreq, setMinExprFreq] = useState(0);
-    const [showAllCells, setShowAllCells] = useState(true);
-    const [filterCells, setFilterCells] = useState('');
     const [excludedEntities, setExcludedEntities] = useState([]);
 
     const allCells = useQuery('allCells', async () => {
@@ -261,46 +260,7 @@ const HeatmapContainer = () => {
                                             {allCells.isLoading ?
                                                 <Spinner animation="grow"/>
                                                 :
-                                                <>
-                                                    <FormControl type="text" size="sm" placeholder="Start typing to filter"
-                                                                 onChange={(event) => setFilterCells(event.target.value)}/>
-                                                    <br/>
-                                                <Card style={{height: "350px", overflowY: "scroll"}}>
-                                                    <Card.Body>
-                                                    {allCells.data.filter(cell => showAllCells || cells.has(cell))
-                                                        .filter(cell => filterCells === '' || cell.startsWith(filterCells))
-                                                        .sort().map(cell =>
-                                                    <FormCheck type="checkbox"
-                                                               label={cell}
-                                                               checked={cells.has(cell)}
-                                                               onChange={(event) => {
-                                                                   if (event.target.checked) {
-                                                                       setCells(new Set([...cells, cell]));
-                                                                   } else {
-                                                                       setCells(new Set([...cells].filter(x => x !== cell)))
-                                                                   }
-                                                               }}
-                                                    />)}</Card.Body></Card>
-                                                    <br/>
-                                                    <Container fluid>
-                                                        <Row>
-                                                            <Col>
-                                                                <FormCheck type="checkbox"
-                                                                           label="show selected only"
-                                                                           checked={!showAllCells}
-                                                                           onChange={(event) => setShowAllCells(!event.target.checked)}
-                                                                />
-                                                            </Col>
-                                                            <Col>
-                                                                <Button variant="outline-primary" size="sm"
-                                                                        onClick={() => setCells(new Set(allCells.data))}>
-                                                                    Select All</Button> <Button variant="outline-primary"
-                                                                                                size="sm"
-                                                                                                onClick={() => setCells(new Set())}>Deselect All</Button>
-                                                            </Col>
-                                                        </Row>
-                                                    </Container>
-                                                </>
+                                                <CellCheckboxSelector allCells={allCells} cells={cells} setCellsCallback={(retCells) => setCells(retCells)}/>
                                             }
                                         </Tab.Pane>
                                     </Tab.Content>

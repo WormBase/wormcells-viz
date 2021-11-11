@@ -6,12 +6,13 @@ import {useQuery} from "react-query";
 import {saveSvgAsPng} from "save-svg-as-png";
 import {Histograms} from "../d3-charts";
 import _ from 'lodash';
-import {resetFirstInputPolyfill} from "web-vitals/dist/modules/lib/polyfills/firstInputPolyfill";
+import CellCheckboxSelector from "../components/CellCheckboxSelector";
 
 
 const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
 
     const [gene, setGene] = useState(gene_param !== "default" ? gene_param : '');
+    const [cells, setCells] = useState([]);
     const [data, setData] = useState(null);
     const [geneID, setGeneID] = useState('');
     const [geneName, setGeneName] = useState('');
@@ -28,8 +29,14 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         return res;
     });
 
+    const allCells = useQuery('allCells', async () => {
+        let data = await axios.get(process.env.REACT_APP_API_ENDPOINT_READ_ALL_CELLS);
+        data = data.data.sort();
+        return data;
+    });
+
     useEffect(() => {
-        fetchData(gene);
+        fetchData(gene, cells);
     }, []);
 
     useEffect(() => {
@@ -53,17 +60,19 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         }
     }, []);
 
-    const fetchData = async (gene_id) => {
+    const fetchData = async (gene_id, cell_names) => {
         setIsLoading(true);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_RIDGELINE;
-        const res = await axios.post(apiEndpoint, {gene_id: gene_id});
+        const res = await axios.post(apiEndpoint, {gene_id: gene_id, cell_names: [...cell_names]});
         setGene(res.data.gene_id);
         let data = []
         let color = 1;
         let sortedCells = [...Object.keys(res.data.response)].sort();
+        let cellNames = [];
         sortedCells.forEach(key => {
             let value = res.data.response[key];
             let cellName = key.replaceAll('_', ' ').trim();
+            cellNames.push(cellName);
             let maxY = Math.max(...value);
             let cellsCount = _.sum([...value]);
             value.forEach((v, i) => data.push({
@@ -92,6 +101,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
         setGeneID(res.data.gene_id);
         setGeneDescription(desc.data);
         setData(data);
+        setCells(cellNames);
         setRidgeLineSize(ridgeLineSize => ({...ridgeLineSize, height: 50 * Object.keys(res.data.response).length + ridgeLineSize.top + ridgeLineSize.bottom}))
         setIsLoading(false);
     }
@@ -132,7 +142,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                             <Spinner animation="grow"/>
                             :
                             <FormGroup controlId="formBasicEmail">
-                                <FormLabel>Load Gene</FormLabel>
+                                <h5>Select Gene</h5>
                                 <AsyncTypeahead
                                     onSearch={(query) => {
                                         axios.get(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=gene&userValue=' + query)
@@ -161,6 +171,13 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                             <strong>Gene Description:</strong> {geneDescription}
                             <br/>
                             <br/>
+                            <h5>Select cells</h5>
+                            {allCells.isLoading ?
+                                <Spinner animation="grow"/>
+                                :
+                                <CellCheckboxSelector allCells={allCells} cells={cells} setCellsCallback={(retCells) =>
+                                    fetchData(gene, retCells)}/>
+                            }
                             <br/>
                             <small>
                                 <ul>
