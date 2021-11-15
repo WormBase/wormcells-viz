@@ -38,7 +38,7 @@ const AutoComplete = ({close, addMultipleItemsFunction, searchType, itemsNameSin
                     <Row>
                         <Col>
                             <FormControl as="textarea" rows="2" size="sm"
-                                         placeholder={"Autocomplete 1+ name or ID"}
+                                         placeholder={"Autocomplete 1+ name or ID. Only entities included in the dataset are shown."}
                                          onChange={(e) => {setSearchString(e.target.value)}}
                             />
                         </Col>

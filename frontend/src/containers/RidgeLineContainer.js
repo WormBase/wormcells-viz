@@ -7,6 +7,7 @@ import {saveSvgAsPng} from "save-svg-as-png";
 import {Histograms} from "../d3-charts";
 import _ from 'lodash';
 import CellCheckboxSelector from "../components/CellCheckboxSelector";
+import ExportImage from "../components/ExportImage";
 
 
 const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
@@ -134,15 +135,14 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                         </Container>
                     </Col>
                     <Col md={4}>
-                        {isLoading ? null : <Button variant="secondary" size="sm"
-                                            onClick={() => saveSvgAsPng(document.getElementById("ridgeline-div").children[0], "diagram.png")}>Export image</Button>}
+                        {isLoading ? null : <ExportImage nodeId="ridgeline-div"/>}
                         <br/>
                         <br/>
                         {allGenes.isLoading ?
                             <Spinner animation="grow"/>
                             :
                             <FormGroup controlId="formBasicEmail">
-                                <h5>Select Gene</h5>
+                                <h5>Select Gene (from those in the dataset)</h5>
                                 <AsyncTypeahead
                                     onSearch={(query) => {
                                         axios.get(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=gene&userValue=' + query)

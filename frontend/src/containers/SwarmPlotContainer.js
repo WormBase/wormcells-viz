@@ -17,6 +17,7 @@ import {
 import {saveSvgAsPng} from "save-svg-as-png";
 import {Typeahead} from "react-bootstrap-typeahead";
 import _ from 'lodash';
+import ExportImage from "../components/ExportImage";
 
 const SwarmPlotContainer = () => {
     const [cell, setCell] = useState('');
@@ -139,9 +140,7 @@ const SwarmPlotContainer = () => {
                         <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
                             <Row>
                                 <Col>
-                                    {isLoading ? null :
-                                    <Button variant="secondary" size="sm"
-                                            onClick={() => saveSvgAsPng(document.getElementById("swarmplot-div").children[0], "diagram.png")}>Export image</Button>}
+                                    {isLoading ? null : <ExportImage nodeId="swarmplot-div"/>}
                                 </Col>
                             </Row>
                             <Row><Col>&nbsp;</Col></Row>
@@ -150,7 +149,7 @@ const SwarmPlotContainer = () => {
                                 <Col>
                                     {allCells.isLoading ? null :
                                     <FormGroup controlId="formBasicEmail">
-                                        <FormLabel>Select Cell</FormLabel>
+                                        <h5>Select Cell (from those in the dataset)</h5>
                                         <Typeahead
                                             options={[...allCells.data]}
                                             onChange={(selected) => {
