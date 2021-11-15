@@ -15,7 +15,7 @@ const CellCheckboxSelector = ({cells, allCells, setCellsCallback}) => {
             <Card style={{height: "350px", overflowY: "scroll"}}>
                 <Card.Body>
                     {allCells.data.filter(cell => showAllCells || cellsSet.has(cell))
-                        .filter(cell => filterCells === '' || cell.startsWith(filterCells))
+                        .filter(cell => filterCells === '' || cell.toLowerCase().startsWith(filterCells.toLowerCase()))
                         .sort().map(cell =>
                             <FormCheck type="checkbox"
                                        label={cell}

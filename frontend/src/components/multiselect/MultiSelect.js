@@ -55,7 +55,7 @@ const MultiSelect = (props) => {
     }
 
     const handleFilterIdChange = (e) => {
-        setSelectedItemsToDisplay(new Set([...selectedItemsAll].filter(item => item.startsWith(e.target.value))));
+        setSelectedItemsToDisplay(new Set([...selectedItemsAll].filter(item => item.toLowerCase().startsWith(e.target.value.toLowerCase()))));
     }
 
     return (

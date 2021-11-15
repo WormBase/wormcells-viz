@@ -175,7 +175,7 @@ const SwarmPlotContainer = () => {
                                                 <Card style={{height: "250px", overflowY: "scroll"}}>
                                                     <Card.Body>
                                                         {[...new Set(data.map(d => d.y))]
-                                                            .filter(gene => filterGenes === '' || gene.startsWith(filterGenes))
+                                                            .filter(gene => filterGenes === '' || gene.toLowerCase().startsWith(filterGenes.toLowerCase()))
                                                             .sort().map(gene =>
                                                                 <FormCheck type="checkbox"
                                                                            label={gene}
