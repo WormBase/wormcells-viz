@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useQuery} from "react-query";
-import {Swarmplot} from "@wormbase/d3-charts";
+import {Swarmplot} from "../d3-charts";
 import axios from "axios";
 import {
     Button,
@@ -14,7 +14,6 @@ import {
     Row,
     Spinner
 } from "react-bootstrap";
-import {saveSvgAsPng} from "save-svg-as-png";
 import {Typeahead} from "react-bootstrap-typeahead";
 import _ from 'lodash';
 import ExportImage from "../components/ExportImage";
@@ -32,7 +31,7 @@ const SwarmPlotContainer = () => {
     const [isLoading, setIsLoading] = useState(false);
     const swarmRef = useRef(null);
 
-    const [swarmplotSize, setSwarmplotSize] = useState({top: 50, right: 25, bottom: 30, left: 120, width: 1200,
+    const [swarmplotSize, setSwarmplotSize] = useState({top: 50, right: 25, bottom: 50, left: 120, width: 1200,
         height: 650});
 
     const allCells = useQuery('allCells', async () => {
