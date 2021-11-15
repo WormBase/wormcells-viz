@@ -144,12 +144,24 @@ export class Histograms {
             .call(d3.axisBottom(x)
                 .ticks(10)
                 .tickFormat(t => "1e" + (-10 + 0.1 * t)));
+        svg.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "middle")
+            .attr("x", this.width / 2)
+            .attr("y", this.height + 40)
+            .text("Expression frequency");
 
         svg.append("g")
             .attr("transform", "translate(0,-" + (margin.top - 20) + ")")
             .call(d3.axisTop(x)
                 .ticks(10)
                 .tickFormat(t => "1e" + (-10 + 0.1 * t)));
+        svg.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "middle")
+            .attr("x", this.width / 2)
+            .attr("y", - margin.top + 40)
+            .text("Expression frequency");
 
         // Create a Y scale for densities
         var y = d3.scaleLinear()
