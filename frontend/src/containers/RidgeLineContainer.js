@@ -176,8 +176,10 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                                 <Spinner animation="grow"/>
                                 :
                                 <CellCheckboxSelector allCells={allCells} cells={cells} setCellsCallback={(retCells) =>
-                                    fetchData(gene, retCells)}/>
+                                    setCells(retCells)}/>
                             }
+                            <Button onClick={() => fetchData(gene, cells)}>Refresh</Button>
+                            <br/>
                             <br/>
                             <small>
                                 <ul>
