@@ -170,7 +170,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                                             let gene_id_first = selected[0].split(' ( ')[1];
                                             if (gene_id_first !== undefined) {
                                                 let gene_id = gene_id_first.split(' )')[0];
-                                                fetchData(gene_id);
+                                                fetchData(gene_id, cells);
                                             }
                                         }
                                     }}
