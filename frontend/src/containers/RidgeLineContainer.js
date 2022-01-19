@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Col, Container, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
+import {Button, Col, Container, FormCheck, FormGroup, FormLabel, Row, Spinner} from "react-bootstrap";
 import axios from "axios";
 import AsyncTypeahead from "react-bootstrap-typeahead/lib/components/AsyncTypeahead";
 import {useQuery} from "react-query";
@@ -14,6 +14,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
 
     const [gene, setGene] = useState(gene_param !== "default" ? gene_param : '');
     const [cells, setCells] = useState([]);
+    const [sortByFreq, setSortByFreq] = useState(false);
     const [data, setData] = useState(null);
     const [geneID, setGeneID] = useState('');
     const [geneName, setGeneName] = useState('');
@@ -38,7 +39,7 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
 
     useEffect(() => {
         fetchData(gene, cells);
-    }, []);
+    }, [sortByFreq]);
 
     useEffect(() => {
         if (data !== null) {
@@ -64,14 +65,26 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
     const fetchData = async (gene_id, cell_names) => {
         setIsLoading(true);
         let apiEndpoint = process.env.REACT_APP_API_ENDPOINT_READ_DATA_RIDGELINE;
-        const res = await axios.post(apiEndpoint, {gene_id: gene_id, cell_names: [...cell_names]});
+        const res = await axios.post(apiEndpoint,
+            {
+                gene_id: gene_id,
+                cell_names: [...cell_names],
+                sort_by_freq: sortByFreq
+            });
         setGene(res.data.gene_id);
         let data = []
         let color = 1;
-        let sortedCells = [...Object.keys(res.data.response)].sort();
+        let sortedCells;
+        if (sortByFreq) {
+            let cellsFreq = [...Object.keys(res.data.response).map((key, index) => [key, res.data.response[key][1]])]
+            cellsFreq.sort((a, b) => b[1] - a[1])
+            sortedCells = cellsFreq.map(cellFreq => cellFreq[0])
+        } else {
+            sortedCells = [...Object.keys(res.data.response)].sort();
+        }
         let cellNames = [];
         sortedCells.forEach(key => {
-            let value = res.data.response[key];
+            let value = res.data.response[key][0];
             let cellName = key.replaceAll('_', ' ').trim();
             cellNames.push(cellName);
             let maxY = Math.max(...value);
@@ -180,6 +193,12 @@ const RidgeLineContainer = ({match:{params:{gene_param}}}) => {
                                         setCells(retCells)}/>
                                     <Button onClick={() => fetchData(gene, cells)}>Refresh</Button>
                                     <br/>
+                                    <br/>
+                                    <FormCheck type="checkbox"
+                                               label="Sort by average expression frequency"
+                                               checked={sortByFreq}
+                                               onChange={(event) => setSortByFreq(!sortByFreq)}
+                                    />
                                 </div>
                             }
                             <br/>

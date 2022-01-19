@@ -61,10 +61,11 @@ class FileStorageEngine(object):
         excluded_entities = [*excluded_cells, *excluded_genes]
         return dict(results_dict), excluded_entities
 
-    def get_data_histogram(self, gene_id: str = None, cell_names: List[str] = None):
+    def get_data_histogram(self, gene_id: str = None, cell_names: List[str] = None, sort_by_freq: bool = False):
         cell_names = set(cell_names) if cell_names else None
         gene_id = gene_id if gene_id else self.get_all_genes()[0]
-        return {cell_name: self.histogram.layers[gene_id][idx].tolist() for
+        return {cell_name: (self.histogram.layers[gene_id][idx].tolist(),
+                            (float(self.heatmap[cell_name, gene_id].X) if sort_by_freq else 0)) for
                 idx, cell_name in enumerate(self.histogram.obs.index) if not cell_names or cell_name in
                 cell_names}, gene_id
 
@@ -132,8 +133,11 @@ class HistogramReader:
         if req.media:
             gene_id = req.media["gene_id"] if "gene_id" in req.media and req.media["gene_id"] else None
             cell_names = req.media["cell_names"] if "cell_names" in req.media and req.media["cell_names"] else None
+            sort_by_freq = req.media["sort_by_freq"] if "sort_by_freq" in req.media and req.media["sort_by_freq"] else \
+                None
             try:
-                results, gene_id = self.storage.get_data_histogram(gene_id=gene_id, cell_names=cell_names)
+                results, gene_id = self.storage.get_data_histogram(gene_id=gene_id, cell_names=cell_names,
+                                                                   sort_by_freq=sort_by_freq)
             except KeyError:
                 results, gene_id = {}, gene_id
             print(str(datetime.now()) + " - Requested histogram data by IP " + req.access_route[0] + " gene_id=" + gene_id)
