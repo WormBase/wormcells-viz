@@ -1,0 +1,30 @@
+version: "3.7"
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "32323:32323"
+    volumes:
+      - "${HEATMAP_FILE_PATH}:/var/www/assets/heatmap_file.h5ad"
+      - "${HISTOGRAM_FILE_PATH}:/var/www/assets/histogram_file.h5ad"
+      - "${SWARMPLOT_FILE_PATH}:/var/www/assets/swarmplot_file.h5ad"
+    networks:
+      - wormcells-viz-network
+
+  web_app:
+    container_name: web_app
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "${WEB_APP_PORT}:5000"
+    depends_on:
+      - api
+    networks:
+      - wormcells-viz-network
+
+networks:
+  wormcells-viz-network:

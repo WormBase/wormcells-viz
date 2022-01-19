@@ -33,7 +33,20 @@ if you have >100 celltypes it can take days to run the pipeline without parallel
 To make it easier to parallelize and run the pipeline on a cluster, we provide a snakemake file for running the pairwise DE step in parallel for each cell type.
 If you have trouble using it please open an issue.
 
-### Install the app
+### Installation
+
+#### Docker
+
+The repository contains a docker-compose file that can be used to easily deploy the api and the web application.
+Before running docker-compose, modify the *_FILE_PATH variables in the .env file in the root folder of the project to 
+point to the three .h5ad files generated for the dataset. You can change the port used by the web application through
+the variable WEB_APP_PORT.
+
+To start the stack, run the following command:
+
+        $ docker-compose up -d
+
+#### Manual installation
 
 1. Follow the instructions to clone the repo form github
 2. From the project root folder, create a python virtual environment and activate it:
