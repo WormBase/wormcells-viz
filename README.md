@@ -11,7 +11,7 @@
 
 - backend: a Python API based on Falcon to manage single cell datasets
 - frontend: a ReactJS app that fetches data from the backend and displays them through d3 charts
-- deployment: configuration files for nginx and systemd to help with deployment
+- manual_deployment: configuration files for nginx and systemd to help with deployment
 - data_preparation: a Python pipeline that uses [scvi-tools](https://scvi-tools.org) and [anndata](https://anndata.readthedocs.io)
 
 ### Data preparation
@@ -37,14 +37,18 @@ If you have trouble using it please open an issue.
 
 #### Docker
 
-The repository contains a docker-compose file that can be used to easily deploy the api and the web application.
+The repository contains a `docker-compose.yml` file that can be used to easily deploy the api and the web application.
 Before running docker-compose, modify the *_FILE_PATH variables in the .env file in the root folder of the project to 
-point to the three .h5ad files generated for the dataset. You can change the port used by the web application through
-the variable WEB_APP_PORT.
+point to the three .h5ad files generated for the dataset. You can also change the port used by the web application and 
+the api through the variable WEB_APP_PORT.
 
 To start the stack, run the following command:
 
         $ docker-compose up -d
+
+To run multiple instances of the application through docker on the same machine, clone the project multiple times in 
+separate folders, set different ports for the api and the web app of each instance, and run each of them with 
+`docker-compose up`.
 
 #### Manual installation
 
