@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     ports:
-      - "32323:32323"
+      - "${API_PORT}:32323"
     volumes:
       - "${HEATMAP_FILE_PATH}:/var/www/assets/heatmap_file.h5ad"
       - "${HISTOGRAM_FILE_PATH}:/var/www/assets/histogram_file.h5ad"
