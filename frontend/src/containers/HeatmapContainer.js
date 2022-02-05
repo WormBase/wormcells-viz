@@ -246,6 +246,7 @@ const HeatmapContainer = () => {
                                             <div>
                                                 <center>Load genes from pre-defined lists:</center>
                                                 <Form.Control as="select" size="sm" onChange={(e) => setGenes(JSON.parse(process.env.REACT_APP_PREDEFINED_GENE_LISTS)[parseInt(e.target.value)-1].genes)}>
+                                                    <option disabled selected value> -- select a list -- </option>
                                                     {JSON.parse(process.env.REACT_APP_PREDEFINED_GENE_LISTS).map(list => <option value={list.idx}>{list.name}</option>)}
                                                 </Form.Control>
                                                 <br/>
