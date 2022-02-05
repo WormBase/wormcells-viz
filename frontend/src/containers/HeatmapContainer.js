@@ -242,6 +242,16 @@ const HeatmapContainer = () => {
                                         <Tab.Pane eventKey={0}>Test</Tab.Pane>
                                         <Tab.Pane eventKey={1}>
                                             <br/>
+                                            {process.env.REACT_APP_PREDEFINED_GENE_LISTS !== "" ?
+                                            <div>
+                                                <center>Load genes from pre-defined lists:</center>
+                                                <Form.Control as="select" size="sm" onChange={(e) => setGenes(JSON.parse(process.env.REACT_APP_PREDEFINED_GENE_LISTS)[parseInt(e.target.value)-1].genes)}>
+                                                    {JSON.parse(process.env.REACT_APP_PREDEFINED_GENE_LISTS).map(list => <option value={list.idx}>{list.name}</option>)}
+                                                </Form.Control>
+                                                <br/>
+                                            </div> :
+                                                null
+                                            }
                                             <MultiSelect
                                                 linkWB={"https://wormbase.org/species/c_elegans/gene"}
                                                 itemsNameSingular={"gene"}
