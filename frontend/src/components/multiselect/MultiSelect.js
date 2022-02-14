@@ -82,7 +82,7 @@ const MultiSelect = (props) => {
                         </div>
                         <div className="row">
                             <div className="col-sm-12">
-                                <small>Select multiple entities at the same time using Ctrl or Shift</small>
+                                <small>Select multiple entries using Ctrl or Shift</small>
                             </div>
                         </div>
                         <div className="row">
