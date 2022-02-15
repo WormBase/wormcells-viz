@@ -20,7 +20,7 @@ import CellCheckboxSelector from "../components/CellCheckboxSelector";
 
 const HeatmapContainer = () => {
 
-    const [genes, setGenes] = useState([]);
+    const [genes, setGenes] = useState(process.env.REACT_APP_PREDEFINED_GENE_LISTS !== undefined ? JSON.parse(process.env.REACT_APP_PREDEFINED_GENE_LISTS)[0].genes : []);
     const [cells, setCells] = useState(new Set());
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -246,8 +246,7 @@ const HeatmapContainer = () => {
                                             <div>
                                                 <center>Load genes from pre-defined lists:</center>
                                                 <Form.Control as="select" size="sm" onChange={(e) => setGenes(JSON.parse(process.env.REACT_APP_PREDEFINED_GENE_LISTS)[parseInt(e.target.value)-1].genes)}>
-                                                    <option disabled selected value> -- select a list -- </option>
-                                                    {JSON.parse(process.env.REACT_APP_PREDEFINED_GENE_LISTS).map(list => <option value={list.idx}>{list.name}</option>)}
+                                                    {JSON.parse(process.env.REACT_APP_PREDEFINED_GENE_LISTS).map(list => <option value={list.idx} selected={list.idx === 1}>{list.name}</option>)}
                                                 </Form.Control>
                                                 <br/>
                                             </div> :
