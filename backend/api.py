@@ -67,7 +67,7 @@ class FileStorageEngine(object):
         cell_names = set(cell_names) if cell_names else None
         gene_id = gene_id if gene_id else self.get_all_genes()[0]
         return {cell_name: (self.histogram.layers[gene_id][idx].toarray()[0].tolist() if
-                            type(self.histogram.layers[gene_id][idx]) == scipy.sparse.spmatrix else
+                            type(self.histogram.layers[gene_id][idx]) == scipy.sparse.csr_matrix else
                             self.histogram.layers[gene_id][idx].tolist(),
                             (float(self.heatmap[cell_name, gene_id].X) if sort_by_freq else 0)) for
                 idx, cell_name in enumerate(self.histogram.obs.index) if not cell_names or cell_name in
