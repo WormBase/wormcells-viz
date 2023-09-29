@@ -81,7 +81,7 @@ separate folders, set different ports for the api and the web app of each instan
         > REACT_APP_API_ENDPOINT_READ_DATA_SWARMPLOT=<api_hostname>:<api_port>/get_data_swarmplot
         > REACT_APP_API_ENDPOINT_READ_ALL_GENES=<api_hostname>:<api_port>/get_all_genes
         > REACT_APP_API_ENDPOINT_READ_ALL_CELLS=<api_hostname>:<api_port>/get_all_cells
-        > REACT_APP_API_AUTOCOMPLETE_ENDPOINT=https://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR
+        > REACT_APP_API_AUTOCOMPLETE_ENDPOINT=https://tazendra.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR
 
 4. Install the frontend requirements:
 
